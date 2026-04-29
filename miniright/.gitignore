@@ -1,4 +1,5 @@
 HELP.md
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -35,3 +36,23 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+logs/
+*.log
+
+### OS Files ###
+.DS_Store
+Thumbs.db
+
+### Local Environment ###
+.env
+*.env
+application-local.properties
+application-secret.properties
+
+### Upload / Generated Files ###
+uploads/
+files/
+temp/
+tmp/
