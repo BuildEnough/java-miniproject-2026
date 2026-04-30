@@ -21,12 +21,33 @@
     - 댓글/좋아요~
     - 캘린더
 
-
 ## 요구사항 정의
-[링크](./docs/PRD.md)
+- [요구사항 링크](./docs/PRD.md)
 
 ## DB 설계
-[링크](./docs/DB.md)
+[![ERD관계도](img/ERD관계도.png)](https://www.erdcloud.com/d/fnx9387Nn7iRRWcCW)  
+- [ERD CLOUD 링크](https://https://www.erdcloud.com/d/fnx9387Nn7iRRWcCW)
+- [DB 사용자 설정 쿼리](/sql/create_user_schema.sql)
+- [DB 테이블 생성 쿼리](/sql/table_create_schema.sql)
 
 ## 화면 설계
-[링크](./docs/Design.md)
+- 홈페이지  
+![홈페이지]()
+
+- 로그인  
+![로그인 페이지]()
+
+- 회원가입  
+![회원가입 페이지]()
+
+- 자유 게시판 글 생성  
+![자유 게시판 글 생성 페이지]()
+
+- 자유 게시판 글 수정  
+![자유 게시판 글 수정 페이지]()
+
+- 거래 게시판 글 생성  
+![거래 게시판 글 생성 페이지]()
+
+- 거래 게시판 글 수정  
+![거래 게시판 글 수정 페이지]()
