@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::content}, ~{::pageScripts})}"
+>
+  <div th:fragment="content" class="container my-3">
+   <h3 th:text="${cBoardForm?.cPostId != null} ? '게시글 수정' : '게시글 등록'"></h3>
+
+    <form th:action="${cBoardForm.cPostId == null} ? @{/cboard/create} : @{/cboard/edit/{id}(id=${cBoardForm.cPostId})}" 
+          th:object="${cBoardForm}" method="post">
+      
+      <input type="hidden" th:field="*{cPostId}" />
+
+      <div class="row mb-3">
+        <div class="col">
+          <label for="title" class="form-label">제목</label>
+          <input
+            type="text"
+            id="title"
+            th:field="*{title}"
+            class="form-control"
+            placeholder="제목을 입력하세요"
+          />
+          <div class="text-danger mt-1" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col">
+          <label for="cContent" class="form-label">내용</label>
+          <textarea
+            id="cContent"
+            th:field="*{cContent}"
+            class="form-control"
+            rows="10"
+          ></textarea>
+          <div class="text-danger mt-1" th:if="${#fields.hasErrors('cContent')}" th:errors="*{cContent}"></div>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col">
+          <div class="text-end">
+            <button type="submit" class="btn btn-sm btn-primary">
+              <i class="bi bi-floppy"></i> 저장
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              onclick="location.href='/cboard/list'"
+            >
+              <i class="bi bi-list"></i> 취소
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script th:fragment="pageScripts">
+    $(function () {
+      $("#cContent").trumbowyg({
+        lang: "ko",
+      });
+    });
+  </script>
+</html>

@@ -1,139 +1,64 @@
 <!DOCTYPE html>
-<html
-  lang="ko"
-  xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{layout :: layout(~{::content}, ~{::script})}"
->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::script})}">
 <head>
     <title>Community & Trade</title>
 </head>
 <body>
 
   <div th:fragment="content">
-    
-    <!-- 1. 메인 슬라이드 (기존 유지 및 이미지 최적화) -->
-    <div id="myCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2"></button>
-      </div>
-      <div class="carousel-inner">
-        <!-- 슬라이드 1: 환영 문구 -->
-        <div class="carousel-item active">
-          <div class="bd-placeholder-img" th:style="'background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(' + @{${homeContent?.caro1ImagePath ?: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1500&q=80'}} + '); width:100%; height:450px; background-size:cover; background-position:center;'"></div>
-          <div class="container">
-            <div class="carousel-caption text-start">
-              <h1 class="display-4 fw-bold">이웃과 소통하는 즐거움</h1>
-              <p>우리 동네 소식부터 자유로운 수다까지, 커뮤니티에서 함께하세요.</p>
-              <p><a class="btn btn-lg btn-primary" th:href="@{/board/free}">게시판 바로가기</a></p>
-            </div>
-          </div>
-        </div>
-        <!-- 슬라이드 2: 중고 거래 -->
-        <div class="carousel-item">
-          <div class="bd-placeholder-img" th:style="'background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(' + @{${homeContent?.caro2ImagePath ?: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1500&q=80'}} + '); width:100%; height:450px; background-size:cover; background-position:center;'"></div>
-          <div class="container">
-            <div class="carousel-caption">
-              <h1 class="display-4 fw-bold">가치 있는 나눔, 중고 거래</h1>
-              <p>안전하고 믿을 수 있는 직거래 시스템으로 필요한 물건을 찾아보세요.</p>
-              <p><a class="btn btn-lg btn-success" th:href="@{/trade/list}">상품 보러가기</a></p>
-            </div>
-          </div>
+    <div class="bd-placeholder-img d-flex align-items-center mb-5" 
+         th:style="'background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(' + @{${homeContent?.caro1ImagePath ?: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1500&q=80'}} + '); width:100%; height:450px; background-size:cover; background-position:center;'">
+      <div class="container text-white">
+        <div class="carousel-caption text-start position-static" style="bottom: 0; padding-bottom: 3rem;">
+          <h1 class="display-4 fw-bold">사람들과 소통하는 즐거움</h1>
+          <p class="lead">자유롭게 소통하고, 사람들과 친하게 지내보세요.</p>
         </div>
       </div>
     </div>
 
-    <!-- 2. 주요 콘텐츠 섹션 -->
-    <div class="container marketing">
-      
-      <div class="row mb-5">
-        <!-- 왼쪽: 최신 커뮤니티 글 -->
+    <div class="container marketing mb-5">
+      <div class="row g-4">
+        
         <div class="col-md-6">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="fw-bold"><i class="bi bi-chat-dots me-2"></i>최신 커뮤니티 소식</h3>
-            <a th:href="@{/board/free}" class="text-decoration-none text-muted small">전체보기 ></a>
-          </div>
-          <div class="list-group shadow-sm">
-            <!-- 서버 데이터 연결 시 th:each 사용 -->
-            <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <i class="bi bi-megaphone text-primary"></i>
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0">이번 주말 동네 축제 같이 가실 분 있나요?</h6>
-                  <p class="mb-0 opacity-75 text-truncate" style="max-width: 300px;">날씨도 좋은데 같이 구경가요!</p>
-                </div>
-                <small class="opacity-50 text-nowrap">3분 전</small>
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-primary m-0">
+                  <i class="bi bi-chat-left-text-fill me-2"></i>자유게시판
+                </h5>
+                <a th:href="@{/board/free}" class="text-decoration-none text-muted small">더보기 ></a>
               </div>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
-              <i class="bi bi-chat-left-text text-secondary"></i>
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0">새로 오픈한 카페 커피맛이 괜찮네요.</h6>
-                  <p class="mb-0 opacity-75 text-truncate" style="max-width: 300px;">분위기도 조용하고 작업하기 딱 좋습니다.</p>
-                </div>
-                <small class="opacity-50 text-nowrap">15분 전</small>
-              </div>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
-              <i class="bi bi-question-circle text-info"></i>
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <h6 class="mb-0">근처 24시 약국 어디 있나요?</h6>
-                  <p class="mb-0 opacity-75 text-truncate" style="max-width: 300px;">갑자기 약이 필요한데 아시는 분 답변 부탁드려요.</p>
-                </div>
-                <small class="opacity-50 text-nowrap">1시간 전</small>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- 오른쪽: 지금 뜨는 인기 상품 -->
-        <div class="col-md-6">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="fw-bold"><i class="bi bi-bag-heart me-2"></i>인기 거래 상품</h3>
-            <a th:href="@{/trade/list}" class="text-decoration-none text-muted small">전체보기 ></a>
-          </div>
-          <div class="row g-3">
-            <!-- 상품 카드 1 -->
-            <div class="col-6">
-              <div class="card h-100 shadow-sm border-0">
-                <img src="https://images.unsplash.com/photo-1588872657578-7efd3f1514a8?w=500&q=80" class="card-img-top" alt="노트북" style="height: 120px; object-fit: cover;">
-                <div class="card-body p-2">
-                  <h6 class="card-title text-truncate mb-1">맥북 에어 M2 급매</h6>
-                  <p class="card-text fw-bold text-primary mb-0">950,000원</p>
-                </div>
-              </div>
-            </div>
-            <!-- 상품 카드 2 -->
-            <div class="col-6">
-              <div class="card h-100 shadow-sm border-0">
-                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80" class="card-img-top" alt="운동화" style="height: 120px; object-fit: cover;">
-                <div class="card-body p-2">
-                  <h6 class="card-title text-truncate mb-1">나이키 운동화 (새상품)</h6>
-                  <p class="card-text fw-bold text-primary mb-0">85,000원</p>
-                </div>
-              </div>
+              
+              <ul class="list-group list-group-flush flex-grow-1 justify-content-center">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div class="text-truncate" style="max-width: 80%;">
+                    <a href="#" class="text-decoration-none text-dark">이번 주말 동네 축제 같이 가실 분 있나요?</a>
+                  </div>
+                  <small class="text-muted"></small>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 3. 중간 홍보 배너 -->
-      <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
-        <div class="container-fluid py-5">
-          <h1 class="display-6 fw-bold">당신 근처의 따뜻한 거래</h1>
-          <p class="col-md-8 fs-4">지금 바로 안 쓰는 물건을 올리고 이웃과 따뜻한 인사를 나누어 보세요.</p>
-          <button class="btn btn-primary btn-lg" type="button">물건 판매하기</button>
-        </div>
-      </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-success m-0">
+                  <i class="bi bi-bag-check-fill me-2"></i>인기 거래 상품
+                </h5>
+                <a th:href="@{/trade/list}" class="text-decoration-none text-muted small">더보기 ></a>
+              </div>
+              
 
+      </div>
     </div>
   </div>
 
   <script th:fragment="script">
-      console.log("Community Home Loaded");
+      console.log("Home Layout Loaded");
   </script>
 
 </body>
