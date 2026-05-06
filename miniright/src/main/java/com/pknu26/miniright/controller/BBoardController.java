@@ -1,5 +1,7 @@
 package com.pknu26.miniright.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pknu26.miniright.dto.BBoard;
+import com.pknu26.miniright.dto.PageRequest;
+import com.pknu26.miniright.dto.PageResponse;
 import com.pknu26.miniright.service.BBoardService;
 import com.pknu26.miniright.validation.BBoardForm;
 
@@ -25,22 +29,36 @@ public class BBoardController {
 
     // 게시글 목록 조회
     @GetMapping("/list")
-    public String list(Model model) {
-        model.addAttribute("bBoardList", this.bBoardService.readBBoardList());
+    public String list(@ModelAttribute PageRequest pageRequest, Model model) {
+        List<BBoard> bBoardList = (List<BBoard>) this.bBoardService.readBBoardList(pageRequest);
         
-        return "/bboard/list";
+        int totalCount = this.bBoardService.getTotalCount(); 
+        int currentPage = pageRequest.getPage(); 
+        int size = pageRequest.getSize(); 
+        
+        PageResponse<BBoard> pageResponse = new PageResponse<>(bBoardList, totalCount, currentPage, size);
+        
+        // 속성 이름 주의 (list.html에서 어떻게 받는지 확인)
+        model.addAttribute("bBoardList", pageResponse); 
+
+        return "bboard/list";
     }
 
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("bBoardForm", new BBoardForm());
-        return "/bboard/form"; 
+    // Create와 Register 통합
+    @GetMapping({"/create", "/register"})
+    public String registerForm(Model model) {
+        model.addAttribute("bboardForm", new BBoardForm());
+        return "bboard/form"; 
     }
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("bBoardForm") BBoardForm bBoardForm,
                          BindingResult bindingResult,
                          Model model) {
+        
+
+        bBoardForm.setUserId(1L);
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("bBoardForm", bBoardForm); 
             return "/bboard/form"; 
@@ -49,38 +67,41 @@ public class BBoardController {
         return "redirect:/bboard/list";
     }
 
-    @GetMapping("/detail/{bPostId}")
-    public String detail(@PathVariable("bPostId") Long bPostId, Model model) {
-        model.addAttribute("BBoard", this.bBoardService.readBBoardById(bPostId));
-        return "/bboard/detail"; 
+    @GetMapping("/detail/{postId}")
+    public String detail(@PathVariable("postId") Long postId, Model model) {
+        model.addAttribute("BBoard", this.bBoardService.readBBoardById(postId));
+        return "bboard/detail"; 
     }
 
-    @GetMapping("/edit/{bPostId}")
-    public String showEditForm(@PathVariable("bPostId") Long bPostId, Model model) {
-        BBoard bBoard = this.bBoardService.readBBoardById(bPostId);
+    @GetMapping("/edit/{postId}")
+    public String showEditForm(@PathVariable("bPostId") Long postId, Model model) {
+        BBoard bBoard = this.bBoardService.readBBoardById(postId);
         BBoardForm bBoardForm = new BBoardForm();
-        bBoardForm.setBPostId(bBoard.getBPostId());
+        
+        // DTO 필드명 매칭
+        bBoardForm.setPostId(bBoard.getPostId()); 
         bBoardForm.setTitle(bBoard.getTitle());
-        bBoardForm.setBContent(bBoard.getBContent());
+        bBoardForm.setContents(bBoard.getContents());
+        
         model.addAttribute("bBoardForm", bBoardForm);
-        return "/bboard/form";  
+        return "bboard/form";  
     }
 
-    @PostMapping("/edit/{bPostId}")
-    public String edit(@PathVariable("bPostId") Long bPostId,
+    @PostMapping("/edit/{postId}")
+    public String edit(@PathVariable("postId") Long postId,
                     @Valid @ModelAttribute("bBoardForm") BBoardForm bBoardForm,
                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "/bboard/form"; 
+            return "bboard/form"; 
         }
-        bBoardForm.setBPostId(bPostId);
+        bBoardForm.setPostId(postId);
         this.bBoardService.updateBBoard(bBoardForm);
-        return "redirect:/bboard/detail/" + bPostId;
+        return "redirect:/bboard/detail/" + postId;
     }
 
-    @PostMapping("/delete/{bPostId}")
-    public String delete(@PathVariable("bPostId") Long bPostId) {
-        this.bBoardService.deleteBBoard(bPostId);
+    @PostMapping("/delete/{postId}")
+    public String delete(@PathVariable("postId") Long postId) {
+        this.bBoardService.deleteBBoard(postId);
         return "redirect:/bboard/list";
     }
 }

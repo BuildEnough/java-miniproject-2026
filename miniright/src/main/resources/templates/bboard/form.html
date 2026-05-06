@@ -6,23 +6,20 @@
 >
   <div th:fragment="content" class="container my-3">
     <h3 class="fw-bold mb-4"
-        th:text="${studyPostForm.postId != null} ? '상품 정보 수정' : '중고 상품 등록'">
+        th:text="${bboardForm != null and bboardForm.bPostId != null} ? '게시글 수정' : '게시글 등록'">
     </h3>
 
-    <!-- 파일 업로드를 위해 enctype 추가 -->
     <form
-      th:object="${studyPostForm}"
-      th:action="${studyPostForm != null and studyPostForm.postId != null} ? @{|/studypost/edit/${studyPostForm.postId}|} : @{/studypost/create}"
+      th:object="${bboardForm}"
+      th:action="${bboardForm != null and bboardForm.bPostId != null} ? @{|/bboard/edit/${bboardForm.bPostId}|} : @{/bboard/create}"
       method="post"
       enctype="multipart/form-data"
     >
-      <input type="hidden" th:field="*{postId}" />
+      <input type="hidden" th:field="*{bPostId}" />
 
-      <!-- 이미지 업로드 섹션 -->
       <div class="mb-4">
-        <label class="form-label fw-bold">상품 이미지</label>
+        <label class="form-label fw-bold">게시글 이미지</label>
         <div class="d-flex flex-wrap gap-3" id="imagePreviewContainer">
-          <!-- 이미지 미리보기 박스 -->
           <div id="imagePreview" class="border d-flex align-items-center justify-content-center bg-light" 
                style="width: 150px; height: 150px; border-radius: 10px; overflow: hidden; cursor: pointer;"
                onclick="document.getElementById('imageFile').click();">
@@ -30,27 +27,33 @@
             <img id="previewImg" src="#" alt="미리보기" style="display: none; width: 100%; height: 100%; object-fit: cover;" />
           </div>
         </div>
-        <input type="file" id="imageFile" name="imageFile" class="form-control d-none" accept="image/*" onchange="readURL(this);" />
+        <input type="file" id="imageFile" name="imageFile" class="form-control d-none" accept="image/*" />
         <small class="text-muted mt-1 d-block">대표 이미지를 등록해주세요. (JPG, PNG, 최대 5MB)</small>
       </div>
 
-      <!-- 제목 및 가격 -->
       <div class="row">
         <div class="col-md-8 mb-3">
-          <label for="title" class="form-label fw-bold">상품명</label>
-          <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="상품명을 입력하세요" />
+          <label for="title" class="form-label fw-bold">제목</label>
+          <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="제목을 입력하세요" />
+          <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
         </div>
+
         <div class="col-md-4 mb-3">
-          <label for="price" class="form-label fw-bold">판매 가격 (원)</label>
-          <input type="number" id="price" th:field="*{price}" class="form-control" placeholder="0" />
+          <label for="categoryId" class="form-label fw-bold">카테고리</label>
+          <select id="categoryId" th:field="*{categoryId}" class="form-select">
+              <option value="">선택하세요</option>
+              <option value="1">공지사항</option>
+              <option value="2">자유게시판</option>
+              <option value="3">거래게시판</option>
+          </select>
+          <div class="text-danger" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
         </div>
       </div>
 
-      <!-- 익명 및 상태 -->
       <div class="d-flex gap-4 mb-3 p-2 bg-light rounded">
         <div class="d-flex align-items-center gap-2">
             <label class="fw-bold small">거래 상태:</label>
-            <select th:field="*{status}" class="form-select form-select-sm" style="width: auto;">
+            <select class="form-select form-select-sm" style="width: auto;">
                 <option value="SELL">판매중</option>
                 <option value="RESERVE">예약중</option>
                 <option value="END">판매완료</option>
@@ -58,28 +61,26 @@
         </div>
       </div>
 
-      <!-- 상세 내용 -->
       <div class="mb-3">
-        <label for="content" class="form-label fw-bold">상세 설명</label>
-        <textarea id="content" th:field="*{content}" class="form-control"></textarea>
+        <label for="content" class="form-label fw-bold">내용</label>
+        <textarea id="content" th:field="*{bContent}" class="form-control" rows="10" placeholder="내용을 입력하세요"></textarea>
+        <div class="text-danger" th:if="${#fields.hasErrors('bContent')}" th:errors="*{bContent}"></div>
       </div>
 
-      <!-- 하단 버튼 -->
       <div class="text-end border-top pt-3">
-        <a th:href="@{/studypost/list}" class="btn btn-outline-secondary">취소</a>
+        <a th:href="@{/bboard/list}" class="btn btn-outline-secondary">취소</a>
         <button type="submit" class="btn btn-primary px-5 shadow-sm">등록하기</button>
       </div>
     </form>
   </div>
 
- <script th:fragment="pageScripts">
+  <script th:fragment="pageScripts">
     document.addEventListener("DOMContentLoaded", function () {
-      // 드롭존, 이미지파일, 프리뷰이미지 아이디로 핸들링
-      const dropZone = document.getElementById("dropZone");
+      const imagePreviewBox = document.getElementById("imagePreview");
       const fileInput = document.getElementById("imageFile");
-      const previewImage = document.getElementById("previewImage");
+      const previewImg = document.getElementById("previewImg");
+      const placeholderIcon = document.getElementById("placeholderIcon");
 
-      // 파일로드 미리보기 이미지에 표시함수
       function previewFile(file) {
         if (!file || !file.type.startsWith("image/")) {
           return;
@@ -87,43 +88,21 @@
 
         const reader = new FileReader();
         reader.onload = function (e) {
-          previewImage.src = e.target.result;
+          previewImg.src = e.target.result;
+          previewImg.style.display = "block";
+          if (placeholderIcon) {
+            placeholderIcon.style.display = "none";
+          }
         };
         reader.readAsDataURL(file);
       }
 
-      // 드롭존 클릭 숨겨진 input 클릭
-      dropZone.addEventListener("click", function () {
+      imagePreviewBox.addEventListener("click", function () {
         fileInput.click();
       });
 
-      // 파일 선택
       fileInput.addEventListener("change", function () {
         const file = this.files[0];
-        previewFile(file);
-      });
-
-      // 마우스 드래그로 이미지 처리
-      dropZone.addEventListener("dragover", function (e) {
-        e.preventDefault();
-        dropZone.classList.add("border-primary");
-      });
-
-      dropZone.addEventListener("dragleave", function () {
-        dropZone.classList.remove("border-primary");
-      });
-
-      dropZone.addEventListener("drop", function (e) {
-        e.preventDefault();
-        dropZone.classList.remove("border-primary");
-
-        const file = e.dataTransfer.files[0];
-        if (!file) return;
-
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        fileInput.files = dt.files;
-
         previewFile(file);
       });
     });

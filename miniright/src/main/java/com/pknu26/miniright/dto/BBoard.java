@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BBoard {
 
-    private Long bPostId; // 게시판 제목
-    private Long categoryId;  // 카테고리 번호
-    private Long userId;  // 유저 번호
-    private String title;  // 제목
-    private String bContent;  // 내용
-    
-    private Integer bviewCount; // 조회수
+    private Long postId;
+    private Long categoryId;
+    private String title;
+    private String contents; 
+    private Long userId;
+
+    private Integer viewCount; // 조회수
     
     private LocalDateTime createdAt;  // 생성일
     private LocalDateTime updatedAt;  // 수정일

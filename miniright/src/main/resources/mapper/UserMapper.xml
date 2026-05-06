@@ -5,7 +5,6 @@
 
 <mapper namespace="com.pknu26.miniright.mapper.UserMapper">
 
-    <!-- 로그인 ID로 회원 조회 -->
     <select id="findByLoginId" parameterType="string" resultType="User">
         SELECT USER_ID,
                LOGIN_ID,
@@ -18,7 +17,6 @@
         WHERE LOGIN_ID = #{loginId}
     </select>
 
-    <!-- 회원 등록 -->
     <insert id="insertUser" parameterType="User">
         INSERT INTO USERS (
             USER_ID, 
@@ -37,9 +35,8 @@
         )
     </insert>
 
-    <!-- 시퀀스 조회 -->
     <select id="nextUserId" resultType="long">
-        SELECT USERS_SEQ.NEXTVAL FROM DUAL
+        SELECT SEQ_USER_ID.NEXTVAL FROM DUAL
     </select>
 
 </mapper>

@@ -5,12 +5,14 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.pknu26.miniright.dto.BBoard;
+import com.pknu26.miniright.dto.PageRequest;
+
 
 @Mapper
 public interface BBoardMapper {
 
     // 전체 게시글 목록 조회
-    List<BBoard> findAll();
+    List<BBoard> selectBBoardList(PageRequest pageRequest);
 
     // 특정 게시글 1개 조회
     BBoard findById(Long bPostId);
@@ -26,4 +28,7 @@ public interface BBoardMapper {
 
     // 조회수 증가
     int increaseBViewCount(Long bPostId);
+
+    int countBBoardList();
+
 }

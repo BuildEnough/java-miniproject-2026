@@ -6,14 +6,16 @@
 <mapper namespace="com.pknu26.miniright.mapper.BBoardMapper">
 
     <!-- 전체 조회 -->
-    <select id="findAll" resultType="BBoard">
+    <select id="selectBBoardList" resultType="BBoard">
         SELECT
             POST_ID,
+            CATEGORY_ID,
             TITLE,
             CONTENTS,
             VIEW_COUNT,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            USER_ID
         FROM B_BOARD
         ORDER BY POST_ID DESC
     </select>
@@ -22,12 +24,13 @@
     <select id="findById" parameterType="long" resultType="BBoard">
         SELECT
             POST_ID,
+            CATEGORY_ID,
             TITLE,
             CONTENTS,
-            WRITER,
             VIEW_COUNT,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            USER_ID
         FROM B_BOARD
         WHERE POST_ID = #{postId}
     </select>
@@ -36,37 +39,30 @@
     <insert id="insertBBoard" parameterType="BBoard">
         INSERT INTO B_BOARD (
             POST_ID,
+            CATEGORY_ID,
             TITLE,
             CONTENTS,
-            WRITER,
-            VIEW_COUNT,
-            CREATED_AT,
-            UPDATED_AT
+            USER_ID
         ) VALUES (
-            B_BOARD_SEQ.NEXTVAL,
+            B_BOARD_SEQ.NEXTVAL, -- 생성하신 시퀀스 명칭 확인 필요
+            #{categoryId},
             #{title},
             #{contents},
             #{writer},
-            0,
-            SYSDATE,
-            NULL
+            #{userId} -- 로그인한 사용자의 고유 번호
         )
     </insert>
 
-    <!-- 수정 -->
-    <!-- <update id="updateBBoard" parameterType="BBoard">
-        UPDATE B_BOARD
-        SET TITLE = #{title},
-            C_CONTENT = #{cContent},
-            UPDATED_AT = SYSDATE
-        WHERE C_POST_ID = #{cPostId}
-    </update> -->
-    
+    <select id="countBBoardList" resultType="int">
+    SELECT COUNT(*) 
+    FROM B_BOARD
+    </select>
+
+    <!-- 수정 (CONTENTS 컬럼명 수정) -->
     <update id="updateBBoard" parameterType="BBoard">
         UPDATE B_BOARD
         SET TITLE = #{title},
-            CONTENT = #{content},
-            WRITER = #{writer},
+            CONTENTS = #{contents},
             UPDATED_AT = SYSDATE
         WHERE POST_ID = #{postId}
     </update>
@@ -78,7 +74,7 @@
     </delete>
 
     <!-- 조회수 증가 -->
-    <update id="increaseCViewCount" parameterType="long">
+    <update id="increaseBViewCount" parameterType="long">
         UPDATE B_BOARD
         SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
         WHERE POST_ID = #{postId}
