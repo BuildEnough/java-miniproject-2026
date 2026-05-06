@@ -44,7 +44,7 @@
             WRITER,
             USER_ID
         ) VALUES (
-            SEQ_C_POST_ID.NEXTVAL, -- 생성하신 시퀀스 명칭 확인 필요
+            C_BOARD_SEQ.NEXTVAL, -- 생성하신 시퀀스 명칭 확인 필요
             #{title},
             #{contents},
             #{writer},

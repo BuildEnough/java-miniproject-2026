@@ -1,6 +1,6 @@
 -- 시퀀스 삭제 필요 시 // 세미콜론 하나씩 실행 요망
 -- 회원(users) 번호 시퀀스 삭제
-DROP SEQUENCE SEQ_USER_ID;
+DROP SEQUENCE SEQ_USERS_ID;
 
 -- 거래게시판(B_BOARD) 시퀀스 삭제
 DROP SEQUENCE SEQ_B_POST_ID;
@@ -20,7 +20,7 @@ DROP SEQUENCE SEQ_REPLY_ID;
 
 
 -- 회원(users) 번호 시퀀스 쿼리문
-CREATE SEQUENCE SEQ_USER_ID 
+CREATE SEQUENCE SEQ_USERS_ID 
 START WITH 1 
 INCREMENT BY 1
 NOCACHE

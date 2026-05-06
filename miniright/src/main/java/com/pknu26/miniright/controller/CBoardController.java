@@ -53,7 +53,7 @@ public class CBoardController {
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         if (loginUser == null) {
-            return "redirect:/login";
+            return "redirect:/user/login";
         }
 
         this.cBoardService.createCBoard(cBoardForm, loginUser.getUserId());

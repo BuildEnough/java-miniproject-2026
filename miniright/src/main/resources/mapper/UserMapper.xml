@@ -19,7 +19,7 @@
     </select>
 
     <!-- 회원 등록 -->
-    <insert id="insertUsers" parameterType="User">
+    <insert id="insertUser" parameterType="User">
         INSERT INTO USERS (
             USER_ID, 
             LOGIN_ID, 
@@ -28,7 +28,7 @@
             ROLE,
             CREATED_AT
         ) VALUES (
-            USERS_SEQ.NEXTVAL,
+            SEQ_USERS_ID.NEXTVAL,
             #{loginId}, 
             #{password,jdbcType=VARCHAR},
             #{name}, 

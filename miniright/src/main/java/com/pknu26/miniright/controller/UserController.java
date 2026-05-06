@@ -86,13 +86,13 @@ public class UserController {
         // HttpSession에 로그인 사용자 저장
         session.setAttribute("loginUser", loginUser);  // HTML 어디서나 사용할 수 있음
 
-        return "redirect:/board/list";
+        return "redirect:/cboard/list";
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();  // 세션정보 날리기
-        return "redirect:/board/list";
+        return "redirect:/cboard/list";
     }
 }
