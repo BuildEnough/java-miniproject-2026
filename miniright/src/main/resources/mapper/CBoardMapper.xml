@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pknu26.miniright.mapper.CBoardMapper">
+
+    <!-- 전체 조회 -->
+    <select id="findAll" resultType="CBoard">
+        SELECT
+            C_POST_ID,
+            TITLE,
+            C_CONTENT,
+            WRITER,
+            C_VIEW_COUNT,
+            CREATED_AT,
+            UPDATED_AT
+        FROM C_BOARD
+        ORDER BY C_POST_ID DESC
+    </select>
+
+    <!-- 상세 조회 -->
+    <select id="findById" parameterType="long"
+            resultType="CBoard">
+        SELECT
+            C_POST_ID,
+            TITLE,
+            C_CONTENT,
+            WRITER,
+            C_VIEW_COUNT,
+            CREATED_AT,
+            UPDATED_AT
+        FROM C_BOARD
+        WHERE C_POST_ID = #{cPostId}
+    </select>
+
+    <!-- 작성 -->
+    <insert id="insertCBoard" parameterType="CBoard">
+        INSERT INTO C_BOARD (
+            C_POST_ID,
+            TITLE,
+            C_CONTENT,
+            WRITER,
+            C_VIEW_COUNT,
+            CREATED_AT,
+            UPDATED_AT
+        ) VALUES (
+            C_BOARD_SEQ.NEXTVAL,
+            #{title},
+            #{cContent},
+            #{writer},
+            0,
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 수정 -->
+    <update id="updateCBoard" parameterType="CBoard">
+        UPDATE C_BOARD
+        SET TITLE = #{title},
+            C_CONTENT = #{cContent},
+            UPDATED_AT = SYSDATE
+        WHERE C_POST_ID = #{cPostId}
+    </update>
+
+    <!-- 삭제 -->
+    <delete id="deleteCBoard" parameterType="long">
+        DELETE FROM C_BOARD
+        WHERE C_POST_ID = #{cPostId}
+    </delete>
+
+    <!-- 조회수 증가 -->
+    <update id="increaseCViewCount" parameterType="long">
+        UPDATE C_BOARD
+        SET C_VIEW_COUNT = NVL(C_VIEW_COUNT, 0) + 1
+        WHERE C_POST_ID = #{cPostId}
+    </update>
+
+</mapper>
