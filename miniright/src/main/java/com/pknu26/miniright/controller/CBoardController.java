@@ -31,13 +31,13 @@ public class CBoardController {
     public String list(Model model) {
         model.addAttribute("cBoardList", this.cBoardService.readCBoardList());
 
-        return "cboard/list";
+        return "/cboard/list";
     }
 
     // 글쓰기 GET
     @GetMapping("/create")
     public String showCreateForm(@ModelAttribute("cBoardForm") CBoardForm cBoardForm) {
-        return "cboard/form";
+        return "/cboard/form";
     }
     
     // 글쓰기 POST
@@ -45,7 +45,7 @@ public class CBoardController {
     public String create(@Valid CBoardForm cBoardForm, BindingResult bindingResult) {
         
         if (bindingResult.hasErrors()) {
-            return "cboard/form";
+            return "/cboard/form";
         }
 
         this.cBoardService.createCBoard(cBoardForm);
@@ -60,7 +60,7 @@ public class CBoardController {
 
         model.addAttribute("cBoard", cBoard);
         
-        return "cboard/detail";
+        return "/cboard/detail";
     }
 
     // 글 수정 GET

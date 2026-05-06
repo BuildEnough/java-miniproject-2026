@@ -55,10 +55,18 @@
     </insert>
 
     <!-- 수정 -->
+    <!-- <update id="updateCBoard" parameterType="CBoard">
+        UPDATE C_BOARD
+        SET TITLE = #{title},
+            C_CONTENT = #{cContent},
+            UPDATED_AT = SYSDATE
+        WHERE C_POST_ID = #{cPostId}
+    </update> -->
+    
     <update id="updateCBoard" parameterType="CBoard">
         UPDATE C_BOARD
         SET TITLE = #{title},
-            CONTENTS = #{contents},
+            CONTENT = #{content},
             WRITER = #{writer},
             UPDATED_AT = SYSDATE
         WHERE POST_ID = #{postId}
@@ -71,7 +79,7 @@
     </delete>
 
     <!-- 조회수 증가 -->
-    <update id="increaseViewCount" parameterType="long">
+    <update id="increaseCViewCount" parameterType="long">
         UPDATE C_BOARD
         SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
         WHERE POST_ID = #{postId}

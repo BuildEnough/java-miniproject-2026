@@ -1,110 +1,65 @@
+
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>자유게시판</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            width: 900px;
-            margin: 40px auto;
-        }
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::content}, ~{})}"
+>
+  <div th:fragment="content" class="container my-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3>자유게시판</h3>
 
-        h1 {
-            margin-bottom: 20px;
-        }
+      <div class="text-end">
+        <!-- 수정: 리스트의 길이를 출력할 때는 .size()를 사용합니다 -->
+        총 <span th:text="${cBoardList != null ? cBoardList.size() : 0}"></span> 건
+      </div>
+    </div>
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
+    <div class="row">
+      <div class="col">
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th class="text-center">순번</th>
+              <th class="text-center">제목</th>
+              <th class="text-center">작성자</th>
+              <th class="text-center">작성일자</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 수정: cBoardList 자체가 리스트이므로 바로 empty 체크 -->
+            <tr th:if="${#lists.isEmpty(cBoardList)}">
+              <td colspan="4" class="text-center">게시글이 없습니다</td>
+            </tr>
+            
+            <!-- 수정: cBoardList 자체가 반복 대상입니다 -->
+            <tr th:each="board : ${cBoardList}">
+              <td class="text-center" th:text="${board.cPostId}"></td>
+              <td>
+                <a th:href="@{|/cboard/detail/${board.cPostId}|}"
+                   th:text="${board.title}"></a>
 
-        a {
-            text-decoration: none;
-            color: #333;
-        }
+                <!-- DTO에 replyCount가 있을 경우만 작동 -->
+                <span th:if="${board.replyCount != null && board.replyCount > 0}"
+                      th:text="' [' + ${board.replyCount} + ']'"
+                      class="text-danger"></span>
+              </td>
+              <td class="text-center" th:text="${board.writer}"></td>
+              <td class="text-center"
+                  th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            </tr>
+          </tbody>
+        </table>
 
-        .btn {
-            padding: 8px 14px;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background-color: #fff;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #f2f2f2;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border-bottom: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f7f7f7;
-        }
-
-        .title {
-            text-align: left;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 40px;
-            color: #777;
-        }
-    </style>
-</head>
-<body>
-
-<h1>자유게시판</h1>
-
-<div class="top">
-    <div>게시글 목록</div>
-    <a class="btn" th:href="@{/cboard/create}">글쓰기</a>
-</div>
-
-<table>
-    <thead>
-    <tr>
-        <th>번호</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>조회수</th>
-        <th>작성일</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:if="${#lists.isEmpty(cBoardList)}">
-        <td colspan="5" class="empty">등록된 게시글이 없습니다.</td>
-    </tr>
-
-    <tr th:each="cBoard : ${cBoardList}">
-        <td th:text="${cBoard.cPostId}">1</td>
-        <td class="title">
-            <a th:href="@{/cboard/detail/{id}(id=${cBoard.cPostId})}"
-               th:text="${cBoard.title}">
-                제목
+        <!-- 하단 영역 (페이징은 리스트만으로는 구현이 안 되므로 일단 버튼만 유지) -->
+        <div class="row">
+          <div class="col-12 text-end">
+            <a th:href="@{/cboard/create}" class="btn btn-sm btn-success">
+              <i class="bi bi-pencil"></i> 글쓰기
             </a>
-        </td>
-        <td th:text="${cBoard.writer}">작성자</td>
-        <td th:text="${cBoard.cViewCount}">0</td>
-        <td th:text="${#temporals.format(cBoard.createdAt, 'yyyy-MM-dd HH:mm')}">
-            2026-05-06
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-</body>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </html>
