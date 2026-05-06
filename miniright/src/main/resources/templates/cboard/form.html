@@ -67,15 +67,15 @@
 </head>
 <body>
 
-<h1 th:text="${cBoardForm.cPostId == null} ? '자유게시판 글쓰기' : '자유게시판 글수정'">
+<h1 th:text="${cBoardForm.postId == null} ? '자유게시판 글쓰기' : '자유게시판 글수정'">
     자유게시판 글쓰기
 </h1>
 
 <form th:object="${cBoardForm}"
-      th:action="${cBoardForm.cPostId == null} ? @{/cboard/create} : @{/cboard/edit/{id}(id=${cBoardForm.cPostId})}"
+      th:action="${cBoardForm.postId == null} ? @{/cboard/create} : @{/cboard/edit/{postId}(postId=${cBoardForm.postId})}"
       method="post">
 
-    <input type="hidden" th:field="*{cPostId}">
+    <input type="hidden" th:field="*{postId}">
 
     <div class="form-group">
         <label for="title">제목</label>
@@ -94,15 +94,15 @@
     </div>
 
     <div class="form-group">
-        <label for="cContent">내용</label>
-        <textarea id="cContent" th:field="*{cContent}" placeholder="내용을 입력하세요"></textarea>
-        <div class="error" th:if="${#fields.hasErrors('cContent')}" th:errors="*{cContent}">
+        <label for="contents">내용</label>
+        <textarea id="contents" th:field="*{contents}" placeholder="내용을 입력하세요"></textarea>
+        <div class="error" th:if="${#fields.hasErrors('contents')}" th:errors="*{contents}">
             내용 오류
         </div>
     </div>
 
     <div class="btn-area">
-        <button type="submit" th:text="${cBoardForm.cPostId == null} ? '등록' : '수정'">등록</button>
+        <button type="submit" th:text="${cBoardForm.postId == null} ? '등록' : '수정'">등록</button>
         <a th:href="@{/cboard/list}">목록</a>
     </div>
 
