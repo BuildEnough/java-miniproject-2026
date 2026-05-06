@@ -11,6 +11,7 @@ import com.pknu26.miniright.service.CBoardService;
 import com.pknu26.miniright.validation.CBoardForm;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/cboard")
 public class CBoardController {
 
@@ -29,13 +31,13 @@ public class CBoardController {
     public String list(Model model) {
         model.addAttribute("cBoardList", this.cBoardService.readCBoardList());
 
-        return "/cboard/list";
+        return "cboard/list";
     }
 
     // 글쓰기 GET
     @GetMapping("/create")
     public String showCreateForm(@ModelAttribute("cBoardForm") CBoardForm cBoardForm) {
-        return "/cboard/form";
+        return "cboard/form";
     }
     
     // 글쓰기 POST
@@ -43,7 +45,7 @@ public class CBoardController {
     public String create(@Valid CBoardForm cBoardForm, BindingResult bindingResult) {
         
         if (bindingResult.hasErrors()) {
-            return "/cboard/form";
+            return "cboard/form";
         }
 
         this.cBoardService.createCBoard(cBoardForm);
@@ -56,15 +58,16 @@ public class CBoardController {
     public String detail(@PathVariable("cPostId") Long cPostId, Model model) {
         CBoard cBoard = this.cBoardService.readCBoardById(cPostId);
 
-        model.addAttribute("CBoard", cBoard);
+        model.addAttribute("cBoard", cBoard);
         
-        return "/cboard/detail";
+        return "cboard/detail";
     }
 
     // 글 수정 GET
     @GetMapping("/edit/{cPostId}")
     public String showEditForm(@PathVariable("cPostId") Long cPostId, Model model) {
-        CBoard cBoard = this.cBoardService.readCBoardById(cPostId);
+        // CBoard cBoard = this.cBoardService.readCBoardById(cPostId);
+        CBoard cBoard = this.cBoardService.readCBoardForEdit(cPostId);
 
         CBoardForm cBoardForm = new CBoardForm();
         cBoardForm.setCPostId(cBoard.getCPostId());

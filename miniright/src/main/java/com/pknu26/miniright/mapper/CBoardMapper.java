@@ -3,6 +3,7 @@ package com.pknu26.miniright.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.pknu26.miniright.dto.CBoard;
 
@@ -13,7 +14,7 @@ public interface CBoardMapper {
     List<CBoard> findAll();
 
     // 특정 게시글 1개 조회
-    CBoard findById(Long cPostId);
+    CBoard findById(@Param("cPostId") Long cPostId);
 
     // 게시글 등록(Create)
     int insertCBoard(CBoard cBoard);
@@ -22,9 +23,8 @@ public interface CBoardMapper {
     int updateCBoard(CBoard cBoard);
 
     // 게시글 삭제
-    int deleteCBoard(Long cPostId);
+    int deleteCBoard(@Param("cPostId") Long cPostId);
 
     // 조회수 증가
-    int increaseCViewCount(Long cPostId);
-
+    int increaseCViewCount(@Param("cPostId") Long cPostId);
 }

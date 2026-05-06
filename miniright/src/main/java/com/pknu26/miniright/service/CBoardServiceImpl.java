@@ -67,4 +67,10 @@ public class CBoardServiceImpl implements CBoardService{
         this.cBoardMapper.deleteCBoard(cPostId);
     }
 
+    // 수정 조회 메서드
+    @Override
+    public CBoard readCBoardForEdit(Long cPostId) {
+        return this.cBoardMapper.findById(cPostId);
+    }
+
 }

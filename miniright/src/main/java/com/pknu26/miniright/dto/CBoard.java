@@ -17,7 +17,7 @@ public class CBoard {
     private String cContent; // 내용
     private String writer; // 작성자
 
-    private Integer cviewCount; // 조회수
+    private Integer cViewCount; // 조회수 // cviewCount -> cViewCount
 
     private LocalDateTime createdAt; // 생성일
     private LocalDateTime updatedAt; // 수정일

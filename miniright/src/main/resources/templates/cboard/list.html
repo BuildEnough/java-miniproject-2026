@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자유게시판</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 900px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #f2f2f2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f7f7f7;
+        }
+
+        .title {
+            text-align: left;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<h1>자유게시판</h1>
+
+<div class="top">
+    <div>게시글 목록</div>
+    <a class="btn" th:href="@{/cboard/create}">글쓰기</a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>조회수</th>
+        <th>작성일</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:if="${#lists.isEmpty(cBoardList)}">
+        <td colspan="5" class="empty">등록된 게시글이 없습니다.</td>
+    </tr>
+
+    <tr th:each="cBoard : ${cBoardList}">
+        <td th:text="${cBoard.cPostId}">1</td>
+        <td class="title">
+            <a th:href="@{/cboard/detail/{id}(id=${cBoard.cPostId})}"
+               th:text="${cBoard.title}">
+                제목
+            </a>
+        </td>
+        <td th:text="${cBoard.writer}">작성자</td>
+        <td th:text="${cBoard.cViewCount}">0</td>
+        <td th:text="${#temporals.format(cBoard.createdAt, 'yyyy-MM-dd HH:mm')}">
+            2026-05-06
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

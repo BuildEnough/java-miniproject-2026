@@ -20,8 +20,7 @@
     </select>
 
     <!-- 상세 조회 -->
-    <select id="findById" parameterType="long"
-            resultType="CBoard">
+    <select id="findById" parameterType="long" resultType="CBoard">
         SELECT
             C_POST_ID,
             TITLE,
@@ -51,18 +50,27 @@
             #{writer},
             0,
             SYSDATE,
-            SYSDATE
+            NULL
         )
     </insert>
 
     <!-- 수정 -->
-    <update id="updateCBoard" parameterType="CBoard">
+    <!-- <update id="updateCBoard" parameterType="CBoard">
         UPDATE C_BOARD
         SET TITLE = #{title},
             C_CONTENT = #{cContent},
             UPDATED_AT = SYSDATE
         WHERE C_POST_ID = #{cPostId}
+    </update> -->
+    <update id="updateCBoard" parameterType="CBoard">
+        UPDATE C_BOARD
+        SET TITLE = #{title},
+            C_CONTENT = #{cContent},
+            WRITER = #{writer},
+            UPDATED_AT = SYSDATE
+        WHERE C_POST_ID = #{cPostId}
     </update>
+
 
     <!-- 삭제 -->
     <delete id="deleteCBoard" parameterType="long">

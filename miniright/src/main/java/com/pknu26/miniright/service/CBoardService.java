@@ -21,4 +21,7 @@ public interface CBoardService {
     // Delete
     void deleteCBoard(Long cPostId);
 
+    // 수정 조회 메서드
+    CBoard readCBoardForEdit(Long cPostId);
+
 }

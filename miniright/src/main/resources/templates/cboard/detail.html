@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자유게시판 상세</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 800px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .post-box {
+            border-top: 2px solid #333;
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            min-height: 250px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .btn-area {
+            margin-top: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        a, button {
+            padding: 9px 16px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        a:hover, button:hover {
+            background-color: #f2f2f2;
+        }
+
+        form {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>자유게시판 상세</h1>
+
+<div class="post-box">
+    <div class="title" th:text="${cBoard.title}">제목</div>
+
+    <div class="meta">
+        작성자:
+        <span th:text="${cBoard.writer}">작성자</span>
+        |
+        조회수:
+        <span th:text="${cBoard.cViewCount}">0</span>
+        |
+        작성일:
+        <span th:text="${#temporals.format(cBoard.createdAt, 'yyyy-MM-dd HH:mm')}">
+            2026-05-06
+        </span>
+    </div>
+
+    <div class="content" th:text="${cBoard.cContent}">
+        내용
+    </div>
+</div>
+
+<div class="btn-area">
+    <a th:href="@{/cboard/list}">목록</a>
+
+    <a th:href="@{/cboard/edit/{id}(id=${cBoard.cPostId})}">수정</a>
+
+    <form th:action="@{/cboard/delete/{id}(id=${cBoard.cPostId})}" method="post"
+          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+        <button type="submit">삭제</button>
+    </form>
+</div>
+
+</body>
+</html>

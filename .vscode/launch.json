@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-MinirightApplication<miniright>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.pknu26.miniright.MinirightApplication",
+            "projectName": "miniright",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
