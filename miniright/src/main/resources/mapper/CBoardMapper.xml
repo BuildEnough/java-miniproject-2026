@@ -8,73 +8,71 @@
     <!-- 전체 조회 -->
     <select id="findAll" resultType="CBoard">
         SELECT
-            C_POST_ID,
+            POST_ID,
             TITLE,
-            C_CONTENT,
+            CONTENTS,
             WRITER,
-            C_VIEW_COUNT,
+            VIEW_COUNT,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            USER_ID
         FROM C_BOARD
-        ORDER BY C_POST_ID DESC
+        ORDER BY POST_ID DESC
     </select>
 
     <!-- 상세 조회 -->
-    <select id="findById" parameterType="long"
-            resultType="CBoard">
+    <select id="findById" parameterType="long" resultType="CBoard">
         SELECT
-            C_POST_ID,
+            POST_ID,
             TITLE,
-            C_CONTENT,
+            CONTENTS,
             WRITER,
-            C_VIEW_COUNT,
+            VIEW_COUNT,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            USER_ID
         FROM C_BOARD
-        WHERE C_POST_ID = #{cPostId}
+        WHERE POST_ID = #{postId}
     </select>
 
     <!-- 작성 -->
     <insert id="insertCBoard" parameterType="CBoard">
         INSERT INTO C_BOARD (
-            C_POST_ID,
+            POST_ID,
             TITLE,
-            C_CONTENT,
+            CONTENTS,
             WRITER,
-            C_VIEW_COUNT,
-            CREATED_AT,
-            UPDATED_AT
+            USER_ID
         ) VALUES (
-            C_BOARD_SEQ.NEXTVAL,
+            SEQ_C_POST_ID.NEXTVAL, -- 생성하신 시퀀스 명칭 확인 필요
             #{title},
-            #{cContent},
+            #{contents},
             #{writer},
-            0,
-            SYSDATE,
-            SYSDATE
+            #{userId} -- 로그인한 사용자의 고유 번호
         )
     </insert>
 
-    <!-- 수정 -->
+    <!-- 수정 (CONTENTS 컬럼명 수정) -->
     <update id="updateCBoard" parameterType="CBoard">
         UPDATE C_BOARD
         SET TITLE = #{title},
-            C_CONTENT = #{cContent},
+            CONTENTS = #{contents},
+            WRITER = #{writer},
             UPDATED_AT = SYSDATE
-        WHERE C_POST_ID = #{cPostId}
+        WHERE POST_ID = #{postId}
     </update>
 
     <!-- 삭제 -->
     <delete id="deleteCBoard" parameterType="long">
         DELETE FROM C_BOARD
-        WHERE C_POST_ID = #{cPostId}
+        WHERE POST_ID = #{postId}
     </delete>
 
     <!-- 조회수 증가 -->
     <update id="increaseCViewCount" parameterType="long">
         UPDATE C_BOARD
-        SET C_VIEW_COUNT = NVL(C_VIEW_COUNT, 0) + 1
-        WHERE C_POST_ID = #{cPostId}
+        SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
+        WHERE POST_ID = #{postId}
     </update>
 
 </mapper>

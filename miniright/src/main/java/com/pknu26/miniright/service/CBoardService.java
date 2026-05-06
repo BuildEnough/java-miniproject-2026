@@ -10,15 +10,18 @@ public interface CBoardService {
     List<CBoard> readCBoardList();
 
     // Create(Insert)
-    void createCBoard(CBoardForm cBoardForm);
+    void createCBoard(CBoardForm cBoardForm, Long userId);
 
     // Read(Select)
-    CBoard readCBoardById(Long cPostId);
+    CBoard readCBoardById(Long postId);
 
     // Update
     void updateCBoard(CBoardForm cBoardForm);
 
     // Delete
-    void deleteCBoard(Long cPostId);
+    void deleteCBoard(Long postId);
+
+    // 수정 조회 메서드
+    CBoard readCBoardForEdit(Long postId);
 
 }

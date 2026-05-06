@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자유게시판 글쓰기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 800px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            height: 250px;
+            resize: vertical;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .btn-area {
+            margin-top: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        button, a {
+            padding: 9px 16px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover, a:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1 th:text="${cBoardForm.postId == null} ? '자유게시판 글쓰기' : '자유게시판 글수정'">
+    자유게시판 글쓰기
+</h1>
+
+<form th:object="${cBoardForm}"
+      th:action="${cBoardForm.postId == null} ? @{/cboard/create} : @{/cboard/edit/{postId}(postId=${cBoardForm.postId})}"
+      method="post">
+
+    <input type="hidden" th:field="*{postId}">
+
+    <div class="form-group">
+        <label for="title">제목</label>
+        <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력하세요">
+        <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+            제목 오류
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="writer">작성자</label>
+        <input type="text" id="writer" th:field="*{writer}" placeholder="작성자를 입력하세요">
+        <div class="error" th:if="${#fields.hasErrors('writer')}" th:errors="*{writer}">
+            작성자 오류
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="contents">내용</label>
+        <textarea id="contents" th:field="*{contents}" placeholder="내용을 입력하세요"></textarea>
+        <div class="error" th:if="${#fields.hasErrors('contents')}" th:errors="*{contents}">
+            내용 오류
+        </div>
+    </div>
+
+    <div class="btn-area">
+        <button type="submit" th:text="${cBoardForm.postId == null} ? '등록' : '수정'">등록</button>
+        <a th:href="@{/cboard/list}">목록</a>
+    </div>
+
+</form>
+
+</body>
+</html>
