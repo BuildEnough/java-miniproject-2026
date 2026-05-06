@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 public class CBoard {
 
     private Long postId; // 게시판 번호 cPostId -> postId
-    // private Long userId; // 유저 번호
+    private Long userId; // 유저 번호
     private String title; // 제목
-    private String content; // 내용 cContent -> content
+    private String contents; // 내용 cContent -> content -> contents
     private String writer; // 작성자
 
     private Integer viewCount; // 조회수 // cviewCount -> cViewCount -> viewCount
@@ -22,3 +22,4 @@ public class CBoard {
     private LocalDateTime createdAt; // 생성일
     private LocalDateTime updatedAt; // 수정일
 }
+

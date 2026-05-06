@@ -24,11 +24,12 @@ public class CBoardServiceImpl implements CBoardService {
 
     // 게시글 등록
     @Override
-    public void createCBoard(CBoardForm cBoardForm) {
+    public void createCBoard(CBoardForm cBoardForm, Long userId) {
         CBoard cBoard = new CBoard();
         cBoard.setTitle(cBoardForm.getTitle());
-        cBoard.setContent(cBoardForm.getCContent()); // 필드명 일치
+        cBoard.setContents(cBoardForm.getContents()); // 필드명 일치
         cBoard.setWriter(cBoardForm.getWriter());
+        cBoard.setUserId(userId);
 
         // 게시글 DB 등록
         this.cBoardMapper.insertCBoard(cBoard);
@@ -45,9 +46,9 @@ public class CBoardServiceImpl implements CBoardService {
     @Override
     public void updateCBoard(CBoardForm cBoardForm) {
         CBoard cBoard = new CBoard();
-        cBoard.setPostId(cBoardForm.getCPostId()); // 필드명 일치
+        cBoard.setPostId(cBoardForm.getPostId()); // 필드명 일치
         cBoard.setTitle(cBoardForm.getTitle());
-        cBoard.setContent(cBoardForm.getCContent());
+        cBoard.setContents(cBoardForm.getContents());
         cBoard.setWriter(cBoardForm.getWriter());
 
         // 수정 DB

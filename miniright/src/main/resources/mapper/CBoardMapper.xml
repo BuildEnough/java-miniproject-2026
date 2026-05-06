@@ -14,7 +14,8 @@
             WRITER,
             VIEW_COUNT,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            USER_ID
         FROM C_BOARD
         ORDER BY POST_ID DESC
     </select>
@@ -28,7 +29,8 @@
             WRITER,
             VIEW_COUNT,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            USER_ID
         FROM C_BOARD
         WHERE POST_ID = #{postId}
     </select>
@@ -40,33 +42,21 @@
             TITLE,
             CONTENTS,
             WRITER,
-            VIEW_COUNT,
-            CREATED_AT,
-            UPDATED_AT
+            USER_ID
         ) VALUES (
-            C_BOARD_SEQ.NEXTVAL,
+            SEQ_C_POST_ID.NEXTVAL, -- 생성하신 시퀀스 명칭 확인 필요
             #{title},
             #{contents},
             #{writer},
-            0,
-            SYSDATE,
-            NULL
+            #{userId} -- 로그인한 사용자의 고유 번호
         )
     </insert>
 
-    <!-- 수정 -->
-    <!-- <update id="updateCBoard" parameterType="CBoard">
-        UPDATE C_BOARD
-        SET TITLE = #{title},
-            C_CONTENT = #{cContent},
-            UPDATED_AT = SYSDATE
-        WHERE C_POST_ID = #{cPostId}
-    </update> -->
-    
+    <!-- 수정 (CONTENTS 컬럼명 수정) -->
     <update id="updateCBoard" parameterType="CBoard">
         UPDATE C_BOARD
         SET TITLE = #{title},
-            CONTENT = #{content},
+            CONTENTS = #{contents},
             WRITER = #{writer},
             UPDATED_AT = SYSDATE
         WHERE POST_ID = #{postId}
