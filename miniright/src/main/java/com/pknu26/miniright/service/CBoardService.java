@@ -13,15 +13,15 @@ public interface CBoardService {
     void createCBoard(CBoardForm cBoardForm);
 
     // Read(Select)
-    CBoard readCBoardById(Long cPostId);
+    CBoard readCBoardById(Long PostId);
 
     // Update
     void updateCBoard(CBoardForm cBoardForm);
 
     // Delete
-    void deleteCBoard(Long cPostId);
+    void deleteCBoard(Long PostId);
 
     // 수정 조회 메서드
-    CBoard readCBoardForEdit(Long cPostId);
+    CBoard readCBoardForEdit(Long PostId);
 
 }

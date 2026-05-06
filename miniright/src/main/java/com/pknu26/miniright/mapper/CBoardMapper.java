@@ -14,17 +14,17 @@ public interface CBoardMapper {
     List<CBoard> findAll();
 
     // 특정 게시글 1개 조회
-    CBoard findById(@Param("cPostId") Long cPostId);
+    CBoard findById(@Param("postId") Long postId);
 
     // 게시글 등록(Create)
     int insertCBoard(CBoard cBoard);
 
-    // 게시글 수정
+    // 게시글 수정(Update)
     int updateCBoard(CBoard cBoard);
 
-    // 게시글 삭제
-    int deleteCBoard(@Param("cPostId") Long cPostId);
+    // 게시글 삭제(Delete)
+    int deleteCBoard(@Param("postId") Long postId);
 
     // 조회수 증가
-    int increaseCViewCount(@Param("cPostId") Long cPostId);
+    int increaseViewCount(@Param("postId") Long postId);
 }

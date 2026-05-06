@@ -70,9 +70,9 @@ public class CBoardController {
         CBoard cBoard = this.cBoardService.readCBoardForEdit(cPostId);
 
         CBoardForm cBoardForm = new CBoardForm();
-        cBoardForm.setCPostId(cBoard.getCPostId());
+        cBoardForm.setCPostId(cBoard.getPostId());
         cBoardForm.setTitle(cBoard.getTitle());
-        cBoardForm.setCContent(cBoard.getCContent());
+        cBoardForm.setCContent(cBoard.getContent());
         cBoardForm.setWriter(cBoard.getWriter());
 
         model.addAttribute("cBoardForm", cBoardForm);
