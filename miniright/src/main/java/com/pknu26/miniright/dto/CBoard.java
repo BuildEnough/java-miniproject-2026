@@ -21,5 +21,7 @@ public class CBoard {
 
     private LocalDateTime createdAt; // 생성일
     private LocalDateTime updatedAt; // 수정일
+
+    private Integer replyCount; // 댓글 수
 }
 
