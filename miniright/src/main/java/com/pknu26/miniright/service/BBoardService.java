@@ -12,7 +12,11 @@ public interface BBoardService {
 
     int getTotalCount(PageRequest pageRequest);
 
+    // 상세보기용: 조회수 증가 O
     BBoard readBBoardById(Long postId);
+
+    // 수정/삭제 권한 확인용: 조회수 증가 X
+    BBoard readBBoardForEdit(Long postId);
 
     void createBBoard(BBoardForm bBoardForm);
 

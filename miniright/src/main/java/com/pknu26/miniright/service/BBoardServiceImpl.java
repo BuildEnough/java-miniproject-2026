@@ -29,10 +29,16 @@ public class BBoardServiceImpl implements BBoardService {
         return this.bBoardMapper.countBBoardList(pageRequest);
     }
 
-    // 게시글 하나 조회
+    // 상세보기용: 조회수 증가 O
     @Override
     public BBoard readBBoardById(Long postId) {
         this.bBoardMapper.increaseBViewCount(postId);
+        return this.bBoardMapper.findById(postId);
+    }
+
+    // 수정/삭제 권한 확인용: 조회수 증가 X
+    @Override
+    public BBoard readBBoardForEdit(Long postId) {
         return this.bBoardMapper.findById(postId);
     }
 
@@ -45,6 +51,7 @@ public class BBoardServiceImpl implements BBoardService {
         bBoard.setUserId(bBoardForm.getUserId());
         bBoard.setTitle(bBoardForm.getTitle());
         bBoard.setContents(bBoardForm.getContents());
+        bBoard.setImagePath(bBoardForm.getImagePath());
 
         this.bBoardMapper.insertBBoard(bBoard);
     }
@@ -58,6 +65,7 @@ public class BBoardServiceImpl implements BBoardService {
         bBoard.setCategoryId(bBoardForm.getCategoryId());
         bBoard.setTitle(bBoardForm.getTitle());
         bBoard.setContents(bBoardForm.getContents());
+        bBoard.setImagePath(bBoardForm.getImagePath());
 
         this.bBoardMapper.updateBBoard(bBoard);
     }

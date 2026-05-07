@@ -8,7 +8,6 @@
     <!-- 검색 조건 -->
     <sql id="searchCondition">
         <where>
-            <!-- 검색어: 제목 + 내용 검색 -->
             <if test="keyword != null and keyword != ''">
                 AND (
                     TITLE LIKE '%' || #{keyword} || '%'
@@ -16,17 +15,14 @@
                 )
             </if>
 
-            <!-- 카테고리 검색 -->
             <if test="categoryId != null">
                 AND CATEGORY_ID = #{categoryId}
             </if>
 
-            <!-- 시작일 -->
             <if test="startDate != null and startDate != ''">
                 AND CREATED_AT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
             </if>
 
-            <!-- 종료일: 해당 날짜의 23:59:59까지 포함하기 위해 +1 전까지 조회 -->
             <if test="endDate != null and endDate != ''">
                 AND CREATED_AT &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
             </if>
@@ -45,6 +41,7 @@
                     TITLE,
                     CONTENTS,
                     VIEW_COUNT,
+                    IMAGE_PATH,
                     CREATED_AT,
                     UPDATED_AT,
                     USER_ID
@@ -72,6 +69,7 @@
             TITLE,
             CONTENTS,
             VIEW_COUNT,
+            IMAGE_PATH,
             CREATED_AT,
             UPDATED_AT,
             USER_ID
@@ -86,13 +84,15 @@
             CATEGORY_ID,
             TITLE,
             CONTENTS,
-            USER_ID
+            USER_ID,
+            IMAGE_PATH
         ) VALUES (
             B_BOARD_SEQ.NEXTVAL,
             #{categoryId},
             #{title},
             #{contents},
-            #{userId}
+            #{userId},
+            #{imagePath}
         )
     </insert>
 
@@ -102,6 +102,7 @@
         SET TITLE = #{title},
             CONTENTS = #{contents},
             CATEGORY_ID = #{categoryId},
+            IMAGE_PATH = #{imagePath},
             UPDATED_AT = SYSDATE
         WHERE POST_ID = #{postId}
     </update>

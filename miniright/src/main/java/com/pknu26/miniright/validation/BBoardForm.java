@@ -1,5 +1,7 @@
 package com.pknu26.miniright.validation;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -19,4 +21,10 @@ public class BBoardForm {
 
     @NotBlank(message = "내용은 필수입니다.")
     private String contents;
+
+    // 기존 이미지 경로
+    private String imagePath;
+
+    // 새로 업로드하는 이미지 파일
+    private MultipartFile imageFile;
 }

@@ -19,6 +19,8 @@ public class BBoard {
 
     private Integer viewCount; // 조회수
     
+    private String imagePath;
+    
     private LocalDateTime createdAt;  // 생성일
     private LocalDateTime updatedAt;  // 수정일
 }

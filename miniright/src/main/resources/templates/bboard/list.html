@@ -92,7 +92,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <p class="text-muted mb-0">
             총
-            <span class="fw-bold text-primary" th:text="${bBoardList.totalCount}">0</span>
+            <span class="fw-bold" th:text="${bBoardList.totalCount}">0</span>
             개의 게시글
         </p>
     </div>
@@ -103,16 +103,17 @@
             <thead>
                 <tr>
                     <th class="text-center" style="width: 9%;">번호</th>
+                    <th class="text-center" style="width: 12%;">이미지</th>
                     <th class="text-center" style="width: 14%;">카테고리</th>
                     <th>제목</th>
                     <th class="text-center" style="width: 10%;">조회수</th>
-                    <th class="text-center" style="width: 20%;">작성일</th>
+                    <th class="text-center" style="width: 18%;">작성일</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr th:if="${#lists.isEmpty(bBoardList.dtoList)}">
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="empty-state text-center">
                             <i class="bi bi-inbox d-block mb-3"></i>
                             <p class="mb-0">게시글이 없습니다.</p>
@@ -122,6 +123,19 @@
 
                 <tr th:each="board : ${bBoardList.dtoList}">
                     <td class="text-center fw-bold text-muted" th:text="${board.postId}">1</td>
+
+                    <td class="text-center">
+                        <img th:if="${board.imagePath != null and board.imagePath != ''}"
+                             th:src="@{${board.imagePath}}"
+                             alt="썸네일"
+                             style="width: 72px; height: 56px; object-fit: cover; border-radius: 12px;" />
+
+                        <div th:if="${board.imagePath == null or board.imagePath == ''}"
+                             class="d-inline-flex align-items-center justify-content-center"
+                             style="width: 72px; height: 56px; border-radius: 12px; background: var(--accent-soft); color: var(--sub-text);">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    </td>
 
                     <td class="text-center">
                         <span th:switch="${board.categoryId}">
