@@ -1,6 +1,5 @@
 package com.pknu26.miniright.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,20 +23,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    // 회원가입 화면 진입
+    // 회원가입 화면
     @GetMapping("/join")
     public String showJoinForm(Model model) {
         model.addAttribute("userJoinForm", new UserJoinForm());
-
-        return "/user/join"; // /user/join.html
+        return "/user/join";
     }
 
-    // 회원가입 DB처리
+    // 회원가입 처리
     @PostMapping("/join")
-    public String join(@Valid @ModelAttribute("userJoinForm") UserJoinForm form, BindingResult bindingResult) {
+    public String join(@Valid @ModelAttribute("userJoinForm") UserJoinForm form,
+                       BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             return "/user/join";
         }
@@ -46,10 +45,10 @@ public class UserController {
             this.userService.join(form);
         } catch (IllegalArgumentException e) {
             bindingResult.reject("error", e.getMessage());
-            return "/user/join"; // 에러메시지가 html에 출려됨
+            return "/user/join";
         }
 
-        return "redirect:/user/login";  // 회원가입이 끝나면 로그인화면으로 전환
+        return "redirect:/user/login";
     }
 
     // 로그인 화면
@@ -59,40 +58,39 @@ public class UserController {
         return "/user/login";
     }
 
-    // 로그인처리
+    // 로그인 처리
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute("userLoginForm") UserLoginForm form, 
-                        BindingResult bindingResult, 
+    public String login(@Valid @ModelAttribute("userLoginForm") UserLoginForm form,
+                        BindingResult bindingResult,
                         HttpSession session) {
-        // BindingResult -> 입력 에러 체크
+
         if (bindingResult.hasErrors()) {
-            return "/user/login";  // 로그인화면으로 돌아가면서 에러메시지 출력
+            return "/user/login";
         }
 
         User user = this.userService.login(form);
 
         if (user == null) {
-            bindingResult.reject("error", "아이디 또는 패스워드가 올바르지 않습니다");
+            bindingResult.reject("error", "아이디 또는 패스워드가 올바르지 않습니다.");
             return "/user/login";
         }
 
         LoginUser loginUser = new LoginUser(
-                                    user.getUserId(), 
-                                    user.getLoginId(), 
-                                    user.getName(), 
-                                    user.getRole()
-                                );
-        
-        // HttpSession에 로그인 사용자 저장
-        session.setAttribute("loginUser", loginUser);  // HTML 어디서나 사용할 수 있음
+                user.getUserId(),
+                user.getLoginId(),
+                user.getName(),
+                user.getRole()
+        );
 
-        return "redirect:/cboard/list";
+        session.setAttribute("loginUser", loginUser);
+
+        return "redirect:/bboard/list";
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();  // 세션정보 날리기
-        return "redirect:/cboard/list";
+        session.invalidate();
+        return "redirect:/";
     }
 }
