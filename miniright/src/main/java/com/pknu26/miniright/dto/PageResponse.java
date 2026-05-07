@@ -2,12 +2,14 @@ package com.pknu26.miniright.dto;
 
 import java.util.List;
 
+import lombok.Data;
 import lombok.Getter;
 
+@Data
 @Getter
-public class PageResponse<T> {
+public class PageResponse<E> {
 
-    private final List<T> dtoList;  // 게시글 리스트 T : Board, Student, Reply등 모두 가능
+    private final List<E> dtoList;  // 게시글 리스트 T : Board, Student, Reply등 모두 가능
     private final int totalCount;   // 전체 게시글 수 예) 32
     private final int currentPage;  // 사용자가 보고있는 현재 페이지 번호
     private final int size;         // 페이지당 게시글 수 10, 
@@ -24,7 +26,7 @@ public class PageResponse<T> {
     private final boolean prev;     // 이전버튼 표시 여부
     private final boolean next;     // 끝버튼 표시 여부
 
-    public PageResponse(List<T> dtoList, int totalCount, int currentPage, int size) {
+    public PageResponse(List<E> dtoList, int totalCount, int currentPage, int size) {
         this.dtoList = dtoList;        // 페이징된 현재 페이지의 실제 게시글 리스트
         this.totalCount = totalCount;   // 전체 데이터 개수
         this.currentPage = currentPage;     // 현재 페이지 

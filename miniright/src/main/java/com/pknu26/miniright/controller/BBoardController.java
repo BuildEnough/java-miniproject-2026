@@ -41,14 +41,14 @@ public class BBoardController {
         // 속성 이름 주의 (list.html에서 어떻게 받는지 확인)
         model.addAttribute("bBoardList", pageResponse); 
 
-        return "bboard/list";
+        return "/bboard/list";
     }
 
     // Create와 Register 통합
-    @GetMapping({"/create", "/register"})
+    @GetMapping("/create")
     public String registerForm(Model model) {
         model.addAttribute("bboardForm", new BBoardForm());
-        return "bboard/form"; 
+        return "/bboard/form"; 
     }
 
     @PostMapping("/create")
@@ -69,12 +69,12 @@ public class BBoardController {
 
     @GetMapping("/detail/{postId}")
     public String detail(@PathVariable("postId") Long postId, Model model) {
-        model.addAttribute("BBoard", this.bBoardService.readBBoardById(postId));
-        return "bboard/detail"; 
+        model.addAttribute("bboard", this.bBoardService.readBBoardById(postId));
+        return "/bboard/detail"; 
     }
 
     @GetMapping("/edit/{postId}")
-    public String showEditForm(@PathVariable("bPostId") Long postId, Model model) {
+    public String showEditForm(@PathVariable("postId") Long postId, Model model) {
         BBoard bBoard = this.bBoardService.readBBoardById(postId);
         BBoardForm bBoardForm = new BBoardForm();
         
