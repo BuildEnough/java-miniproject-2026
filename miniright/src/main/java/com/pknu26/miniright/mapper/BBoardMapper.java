@@ -11,8 +11,11 @@ import com.pknu26.miniright.dto.PageRequest;
 @Mapper
 public interface BBoardMapper {
 
-    // 전체 게시글 목록 조회
+    // 검색 + 페이징 목록 조회
     List<BBoard> selectBBoardList(PageRequest pageRequest);
+
+    // 검색 조건에 맞는 전체 게시글 수
+    int countBBoardList(PageRequest pageRequest);
 
     // 특정 게시글 1개 조회
     BBoard findById(@Param("postId") Long postId);
@@ -28,7 +31,4 @@ public interface BBoardMapper {
 
     // 조회수 증가
     int increaseBViewCount(@Param("postId") Long postId);
-
-    // 전체 게시글 수
-    int countBBoardList();
 }

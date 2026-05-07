@@ -1,63 +1,193 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content}, ~{})}">
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::content}, ~{})}"
+>
 <div th:fragment="content" class="container my-4">
-    
-    <div th:if="${bBoardList != null}">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3>거래게시판</h3>
-            <p class="text-muted mb-0">총 
-              <span class="fw-bold text-primary" th:if="${bBoardList.totalCount >= 0}" th:text="${bBoardList.totalCount}">0</span>개의 상품이 있습니다. 
-            </p>
-            <a th:href="@{/bboard/create}" class="btn btn-primary shadow-sm">
-                <i class="bi bi-plus-lg"></i> 내 물건 등록
-            </a>
-        </div>
 
-        <div class="row">
-          <div class="col">
-            <table class="table">
-              <thead class="table-dark">
-                <tr>
-                  <th class="text-center">순번</th>
-                  <th class="text-center">제목</th>
-                  <th class="text-center">작성일자</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr th:if="${#lists.isEmpty(bBoardList.dtoList)}">
-                  <td colspan="3" class="text-center">게시글이 없습니다</td>
-                </tr>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">거래게시판</h3>
 
-                <tr th:each="board : ${bBoardList.dtoList}">
-                  <td class="text-center" th:text="${board.postId}"></td>
-                  <td>
-                    <a th:href="@{|/bboard/detail/${board.postId}|}" th:text="${board.title}"></a>
-                  </td>
-                  <td class="text-center">
-                      <span th:text="${board.createdAt != null ? #temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm') : '-'}"></span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <nav th:if="${bBoardList.totalCount > 0}">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${!bBoardList.prev} ? 'disabled'">
-                    <a class="page-link" th:href="@{/bboard/list(page=${bBoardList.startPage - 1})}">이전</a>
-                </li>
-                <li class="page-item"
-                    th:if="${bBoardList.startPage <= bBoardList.endPage}"
-                    th:each="pageNum : ${#numbers.sequence(bBoardList.startPage, bBoardList.endPage)}"
-                    th:classappend="${pageNum == bBoardList.currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/bboard/list(page=${pageNum})}" th:text="${pageNum}">1</a>
-                </li>
-                <li class="page-item" th:classappend="${!bBoardList.next} ? 'disabled'">
-                    <a class="page-link" th:href="@{/bboard/list(page=${bBoardList.endPage + 1})}">다음</a>
-                </li>
-            </ul>
-        </nav>
+        <a th:href="@{/bboard/create}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg"></i> 내 물건 등록
+        </a>
     </div>
+
+    <!-- 검색 영역 -->
+    <form th:action="@{/bboard/list}" method="get" th:object="${pageRequest}" class="card mb-4">
+        <div class="card-body">
+            <input type="hidden" name="page" value="1" />
+            <input type="hidden" name="size" th:value="*{size}" />
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-3">
+                    <label for="categoryId" class="form-label">카테고리</label>
+                    <select id="categoryId" name="categoryId" class="form-select">
+                        <option value="">전체</option>
+                        <option value="1" th:selected="*{categoryId == 1}">삽니다</option>
+                        <option value="2" th:selected="*{categoryId == 2}">팝니다</option>
+                        <option value="3" th:selected="*{categoryId == 3}">예약중</option>
+                        <option value="4" th:selected="*{categoryId == 4}">판매완료</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label">시작일</label>
+                    <input type="date"
+                           id="startDate"
+                           name="startDate"
+                           class="form-control"
+                           th:value="*{startDate}" />
+                </div>
+
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label">종료일</label>
+                    <input type="date"
+                           id="endDate"
+                           name="endDate"
+                           class="form-control"
+                           th:value="*{endDate}" />
+                </div>
+
+                <div class="col-md-3">
+                    <label for="keyword" class="form-label">검색어</label>
+                    <input type="text"
+                           id="keyword"
+                           name="keyword"
+                           class="form-control"
+                           placeholder="제목 또는 내용"
+                           th:value="*{keyword}" />
+                </div>
+
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-dark">
+                        검색
+                    </button>
+
+                    <a th:href="@{/bboard/list}" class="btn btn-outline-secondary">
+                        초기화
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 총 개수 -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <p class="text-muted mb-0">
+            총
+            <span class="fw-bold text-primary" th:text="${bBoardList.totalCount}">0</span>
+            개의 게시글이 있습니다.
+        </p>
+    </div>
+
+    <!-- 목록 -->
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th class="text-center" style="width: 10%;">번호</th>
+                <th class="text-center" style="width: 15%;">카테고리</th>
+                <th class="text-center">제목</th>
+                <th class="text-center" style="width: 10%;">조회수</th>
+                <th class="text-center" style="width: 20%;">작성일자</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:if="${#lists.isEmpty(bBoardList.dtoList)}">
+                <td colspan="5" class="text-center py-5">
+                    게시글이 없습니다.
+                </td>
+            </tr>
+
+            <tr th:each="board : ${bBoardList.dtoList}">
+                <td class="text-center" th:text="${board.postId}">1</td>
+
+                <td class="text-center">
+                    <span th:switch="${board.categoryId}">
+                        <span th:case="1" class="badge text-bg-primary">삽니다</span>
+                        <span th:case="2" class="badge text-bg-success">팝니다</span>
+                        <span th:case="3" class="badge text-bg-warning">예약중</span>
+                        <span th:case="4" class="badge text-bg-secondary">판매완료</span>
+                        <span th:case="*" class="badge text-bg-light">기타</span>
+                    </span>
+                </td>
+
+                <td>
+                    <a th:href="@{|/bboard/detail/${board.postId}|}"
+                       th:text="${board.title}"
+                       class="text-decoration-none text-dark fw-semibold">
+                        제목
+                    </a>
+                </td>
+
+                <td class="text-center" th:text="${board.viewCount}">0</td>
+
+                <td class="text-center">
+                    <span th:text="${board.createdAt != null ? #temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">
+                        -
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이징 -->
+    <nav th:if="${bBoardList.totalCount > 0}">
+        <ul class="pagination justify-content-center">
+
+            <!-- 이전 -->
+            <li class="page-item" th:classappend="${!bBoardList.prev} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/bboard/list(
+                        page=${bBoardList.startPage - 1},
+                        size=${pageRequest.size},
+                        keyword=${pageRequest.keyword},
+                        startDate=${pageRequest.startDate},
+                        endDate=${pageRequest.endDate},
+                        categoryId=${pageRequest.categoryId}
+                   )}">
+                    이전
+                </a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li class="page-item"
+                th:each="pageNum : ${#numbers.sequence(bBoardList.startPage, bBoardList.endPage)}"
+                th:classappend="${pageNum == bBoardList.currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/bboard/list(
+                        page=${pageNum},
+                        size=${pageRequest.size},
+                        keyword=${pageRequest.keyword},
+                        startDate=${pageRequest.startDate},
+                        endDate=${pageRequest.endDate},
+                        categoryId=${pageRequest.categoryId}
+                   )}"
+                   th:text="${pageNum}">
+                    1
+                </a>
+            </li>
+
+            <!-- 다음 -->
+            <li class="page-item" th:classappend="${!bBoardList.next} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/bboard/list(
+                        page=${bBoardList.endPage + 1},
+                        size=${pageRequest.size},
+                        keyword=${pageRequest.keyword},
+                        startDate=${pageRequest.startDate},
+                        endDate=${pageRequest.endDate},
+                        categoryId=${pageRequest.categoryId}
+                   )}">
+                    다음
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
 </div>
 </html>

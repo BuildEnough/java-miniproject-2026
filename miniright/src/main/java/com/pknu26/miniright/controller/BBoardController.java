@@ -2,7 +2,6 @@ package com.pknu26.miniright.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,20 +20,21 @@ import com.pknu26.miniright.validation.BBoardForm;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/bboard")
+@RequiredArgsConstructor
 public class BBoardController {
 
-    @Autowired
-    private BBoardService bBoardService;
+    private final BBoardService bBoardService;
 
-    // 게시글 목록 조회
+    // 게시글 목록 조회 + 검색 + 페이징
     @GetMapping("/list")
     public String list(@ModelAttribute PageRequest pageRequest, Model model) {
         List<BBoard> bBoardList = this.bBoardService.readBBoardList(pageRequest);
 
-        int totalCount = this.bBoardService.getTotalCount();
+        int totalCount = this.bBoardService.getTotalCount(pageRequest);
         int currentPage = pageRequest.getPage();
         int size = pageRequest.getSize();
 
@@ -42,6 +42,7 @@ public class BBoardController {
                 new PageResponse<>(bBoardList, totalCount, currentPage, size);
 
         model.addAttribute("bBoardList", pageResponse);
+        model.addAttribute("pageRequest", pageRequest);
 
         return "/bboard/list";
     }

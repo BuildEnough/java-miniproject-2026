@@ -5,22 +5,41 @@ import lombok.Data;
 @Data
 public class PageRequest {
 
-    private int page = 1;  /// 현재 페이지, 1, 2, 3 
-    private int size = 10; // 한 페이지당 게시글 수
+    // 현재 페이지
+    private int page = 1;
 
-    /**
-     * page 1 : (1 - 1) * 10 = 0
-     * page 2 : (2 - 1) * 10 = 10
-     * page 3 : (3 - 1) * 10 = 20
-     */
+    // 한 페이지당 게시글 수
+    private int size = 10;
 
-    /**
-     * page 1 : (1 - 1) * 10 = 0
-     * page 2 : (2 - 1) * 10 = 10
-     * page 3 : (3 - 1) * 10 = 20
-     * @return
-     */
+    // 검색어
+    private String keyword;
+
+    // 시작일 yyyy-MM-dd
+    private String startDate;
+
+    // 종료일 yyyy-MM-dd
+    private String endDate;
+
+    // 카테고리
+    private Long categoryId;
+
     public int getOffset() {
-        return (page - 1) * size; 
+        return (page - 1) * size;
+    }
+
+    public void setPage(int page) {
+        if (page < 1) {
+            this.page = 1;
+            return;
+        }
+        this.page = page;
+    }
+
+    public void setSize(int size) {
+        if (size < 1) {
+            this.size = 10;
+            return;
+        }
+        this.size = size;
     }
 }

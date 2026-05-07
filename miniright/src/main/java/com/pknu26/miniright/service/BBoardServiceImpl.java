@@ -17,6 +17,25 @@ public class BBoardServiceImpl implements BBoardService {
 
     private final BBoardMapper bBoardMapper;
 
+    // 검색 + 페이징 목록 조회
+    @Override
+    public List<BBoard> readBBoardList(PageRequest pageRequest) {
+        return this.bBoardMapper.selectBBoardList(pageRequest);
+    }
+
+    // 검색 조건에 맞는 전체 게시글 수
+    @Override
+    public int getTotalCount(PageRequest pageRequest) {
+        return this.bBoardMapper.countBBoardList(pageRequest);
+    }
+
+    // 게시글 하나 조회
+    @Override
+    public BBoard readBBoardById(Long postId) {
+        this.bBoardMapper.increaseBViewCount(postId);
+        return this.bBoardMapper.findById(postId);
+    }
+
     // 게시글 등록
     @Override
     public void createBBoard(BBoardForm bBoardForm) {
@@ -28,13 +47,6 @@ public class BBoardServiceImpl implements BBoardService {
         bBoard.setContents(bBoardForm.getContents());
 
         this.bBoardMapper.insertBBoard(bBoard);
-    }
-
-    // 게시글 하나 조회
-    @Override
-    public BBoard readBBoardById(Long postId) {
-        this.bBoardMapper.increaseBViewCount(postId);
-        return this.bBoardMapper.findById(postId);
     }
 
     // 게시글 수정
@@ -54,17 +66,5 @@ public class BBoardServiceImpl implements BBoardService {
     @Override
     public void deleteBBoard(Long postId) {
         this.bBoardMapper.deleteBBoard(postId);
-    }
-
-    // 페이징 목록 조회
-    @Override
-    public List<BBoard> readBBoardList(PageRequest pageRequest) {
-        return this.bBoardMapper.selectBBoardList(pageRequest);
-    }
-
-    // 전체 게시글 수
-    @Override
-    public int getTotalCount() {
-        return this.bBoardMapper.countBBoardList();
     }
 }
