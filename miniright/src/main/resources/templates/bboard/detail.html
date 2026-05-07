@@ -1,108 +1,279 @@
-<!DOCTYPE html>
+<!doctype html>
 <html
   lang="ko"
   xmlns:th="http://www.thymeleaf.org"
   th:replace="~{layout :: layout(~{::content}, ~{})}"
 >
-<div th:fragment="content" class="container my-5" style="max-width: 960px">
-
-  <div th:if="${bboard != null}">
-
-    <!-- 제목 영역 -->
-    <section class="detail-title-box mb-4">
-      <div class="mb-3">
-        <span th:switch="${bboard.categoryId}">
-          <span th:case="1" class="category-badge badge-buy">삽니다</span>
-          <span th:case="2" class="category-badge badge-sell">팝니다</span>
-          <span th:case="3" class="category-badge badge-reserve">예약중</span>
-          <span th:case="4" class="category-badge badge-done">판매완료</span>
-          <span th:case="*" class="category-badge badge-done">기타</span>
-        </span>
-      </div>
-
-      <h2 class="detail-title mb-3" th:text="${bboard.title}">
-        게시글 제목
-      </h2>
-
-      <div class="detail-meta d-flex flex-wrap gap-3">
-        <span>
-          <i class="bi bi-hash"></i>
-          번호 <span th:text="${bboard.postId}">1</span>
-        </span>
-
-        <span>
-          <i class="bi bi-eye"></i>
-          조회수 <span th:text="${bboard.viewCount}">0</span>
-        </span>
-
-        <span>
-          <i class="bi bi-calendar3"></i>
-          작성일
-          <span th:text="${bboard.createdAt != null ? #temporals.format(bboard.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">
-            -
+  <div th:fragment="content" class="container my-5" style="max-width: 960px">
+    <div th:if="${bboard != null}">
+      <!-- 제목 영역 -->
+      <section class="detail-title-box mb-4">
+        <div class="mb-3">
+          <span th:switch="${bboard.categoryId}">
+            <span th:case="1" class="category-badge badge-buy">삽니다</span>
+            <span th:case="2" class="category-badge badge-sell">팝니다</span>
+            <span th:case="3" class="category-badge badge-reserve">예약중</span>
+            <span th:case="4" class="category-badge badge-done">판매완료</span>
+            <span th:case="*" class="category-badge badge-done">기타</span>
           </span>
-        </span>
+        </div>
 
-        <span th:if="${bboard.updatedAt != null}">
-          <i class="bi bi-pencil-square"></i>
-          수정일
-          <span th:text="${#temporals.format(bboard.updatedAt, 'yyyy-MM-dd HH:mm')}">
-            -
+        <h2 class="detail-title mb-3" th:text="${bboard.title}">게시글 제목</h2>
+
+        <div class="detail-meta d-flex flex-wrap gap-3">
+          <span>
+            <i class="bi bi-hash"></i>
+            번호 <span th:text="${bboard.postId}">1</span>
           </span>
-        </span>
-      </div>
-    </section>
 
-    <!-- 이미지 영역 -->
-    <section class="mb-4" th:if="${bboard.imagePath != null and bboard.imagePath != ''}">
-      <img th:src="@{${bboard.imagePath}}"
-           alt="게시글 이미지"
-           style="width: 100%; max-height: 480px; object-fit: cover; border-radius: 24px; border: 1px solid var(--border-color);" />
-    </section>
+          <span>
+            <i class="bi bi-eye"></i>
+            조회수 <span th:text="${bboard.viewCount}">0</span>
+          </span>
 
-    <!-- 내용 영역 -->
-    <section class="detail-content mb-4">
-      <div th:utext="${bboard.contents}">
-        내용
-      </div>
-    </section>
+          <span>
+            <i class="bi bi-calendar3"></i>
+            작성일
+            <span
+              th:text="${bboard.createdAt != null ? #temporals.format(bboard.createdAt, 'yyyy-MM-dd HH:mm') : '-'}"
+            >
+              -
+            </span>
+          </span>
 
-    <!-- 버튼 영역 -->
-    <div class="d-flex justify-content-between align-items-center">
-      <a th:href="@{/bboard/list}" class="btn btn-outline-secondary">
-        <i class="bi bi-list-ul me-1"></i>
-        목록
-      </a>
+          <span th:if="${bboard.updatedAt != null}">
+            <i class="bi bi-pencil-square"></i>
+            수정일
+            <span
+              th:text="${#temporals.format(bboard.updatedAt, 'yyyy-MM-dd HH:mm')}"
+            >
+              -
+            </span>
+          </span>
+        </div>
+      </section>
 
-      <!-- 작성자 본인만 수정/삭제 가능 -->
-      <div class="d-flex gap-2" th:if="${isOwner}">
-        <a th:href="@{|/bboard/edit/${bboard.postId}|}" class="btn btn-warning">
-          <i class="bi bi-pencil-square me-1"></i>
-          수정
+      <!-- 이미지 영역 -->
+      <section
+        class="mb-4"
+        th:if="${bboard.imagePath != null and bboard.imagePath != ''}"
+      >
+        <img
+          th:src="@{${bboard.imagePath}}"
+          alt="게시글 이미지"
+          style="
+            width: 100%;
+            max-height: 480px;
+            object-fit: cover;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+          "
+        />
+      </section>
+
+      <!-- 내용 영역 -->
+      <section class="detail-content mb-4">
+        <div th:utext="${bboard.contents}">내용</div>
+      </section>
+
+      <!-- 버튼 영역 -->
+      <div class="d-flex justify-content-between align-items-center">
+        <a th:href="@{/bboard/list}" class="btn btn-outline-secondary">
+          <i class="bi bi-list-ul me-1"></i>
+          목록
         </a>
 
-        <form th:action="@{|/bboard/delete/${bboard.postId}|}"
-              method="post"
-              onsubmit="return confirm('정말 삭제하시겠습니까?');">
-          <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash me-1"></i>
-            삭제
-          </button>
-        </form>
-      </div>
+        <!-- 작성자 본인만 수정/삭제 가능 -->
+        <div class="d-flex gap-2" th:if="${isOwner}">
+          <a
+            th:href="@{|/bboard/edit/${bboard.postId}|}"
+            class="btn btn-warning"
+          >
+            <i class="bi bi-pencil-square me-1"></i>
+            수정
+          </a>
 
-      <!-- 로그인하지 않은 사용자 -->
-      <div th:if="${session.loginUser == null}" class="text-muted small">
-        수정과 삭제는 로그인 후 이용할 수 있습니다.
-      </div>
+          <form
+            th:action="@{|/bboard/delete/${bboard.postId}|}"
+            method="post"
+            onsubmit="return confirm('정말 삭제하시겠습니까?');"
+          >
+            <button type="submit" class="btn btn-danger">
+              <i class="bi bi-trash me-1"></i>
+              삭제
+            </button>
+          </form>
+        </div>
 
-      <!-- 로그인했지만 작성자가 아닌 사용자 -->
-      <div th:if="${session.loginUser != null and !isOwner}" class="text-muted small">
-        작성자만 수정과 삭제를 할 수 있습니다.
+        <!-- 로그인하지 않은 사용자 -->
+        <div th:if="${session.loginUser == null}" class="text-muted small">
+          수정과 삭제는 로그인 후 이용할 수 있습니다.
+        </div>
+
+        <!-- 로그인했지만 작성자가 아닌 사용자 -->
+        <div
+          th:if="${session.loginUser != null and !isOwner}"
+          class="text-muted small"
+        >
+          작성자만 수정과 삭제를 할 수 있습니다.
+        </div>
       </div>
     </div>
 
-  </div>
+    <!-- 댓글 목록 출력 영역 -->
+    <div class="mt-5">
+      <h4>
+        <i class="bi bi-chat-dots"></i> 댓글
+        <span th:text="${comments != null ? #lists.size(comments) : 0}">0</span>
+      </h4>
+      <hr />
 
-</div>
+      <div th:each="comment : ${comments}" class="mb-3 p-3 border-bottom">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <strong class="text-primary" th:text="${comment.loginId}">작성자</strong>
+            <small
+              class="text-muted ms-2"
+              th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"
+              >작성일</small
+            >
+          </div>
+
+          <!-- 본인 댓글일 때만 버튼 노출 -->
+          <div
+            th:if="${session.loginUser != null && session.loginUser.userId == comment.userId}"
+            class="d-flex gap-2"
+          >
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-warning py-0"
+              th:onclick="|showEditForm('${comment.commentId}')|"
+            >
+              수정
+            </button>
+
+            <form
+              th:action="@{|/comments/delete/${comment.commentId}|}"
+              method="post"
+              onsubmit="return confirm('댓글을 삭제하시겠습니까?');"
+            >
+              <input type="hidden" name="postId" th:value="${bboard.postId}" />
+              <button type="submit" class="btn btn-sm btn-outline-danger py-0">
+                삭제
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 일반 모드: 댓글 내용 출력 -->
+        <p
+          th:id="|content-${comment.commentId}|"
+          class="mt-2 mb-1"
+          th:text="${comment.contents}"
+        >
+          내용
+        </p>
+
+        <!-- 수정 모드: 기본적으로 숨겨져 있음 -->
+        <div
+          th:id="|edit-form-${comment.commentId}|"
+          style="display: none"
+          class="mt-2"
+        >
+          <form
+            th:action="@{|/comments/edit/${comment.commentId}|}"
+            method="post"
+          >
+            <input type="hidden" name="postId" th:value="${bboard.postId}" />
+            <textarea
+              name="contents"
+              class="form-control mb-2"
+              rows="2"
+              th:text="${comment.contents}"
+            ></textarea>
+            <div class="text-end">
+              <button
+                type="button"
+                class="btn btn-sm btn-secondary"
+                th:onclick="|hideEditForm('${comment.commentId}')|"
+              >
+                취소
+              </button>
+              <button type="submit" class="btn btn-sm btn-primary">
+                수정완료
+              </button>
+            </div>
+          </form>
+        </div>
+      </div> <!-- th:each 끝 -->
+    </div>
+
+    <!-- 댓글이 없을 때 -->
+    <div
+      th:if="${#lists.isEmpty(comments)}"
+      class="text-center py-5 text-muted"
+    >
+      <i class="bi bi-chat-left-dots fs-2 d-block mb-2"></i>
+      등록된 댓글이 없습니다. 첫 댓글을 남겨보세요!
+    </div>
+
+    <!-- 댓글 작성 영역 -->
+    <section class="comment-write-box my-4 p-4 border rounded-3 bg-light">
+      <h5 class="mb-3"><i class="bi bi-pencil-fill"></i> 댓글 쓰기</h5>
+
+      <div th:if="${session.loginUser != null}">
+        <form
+          th:action="@{/comments/create}"
+          th:object="${commentsForm}"
+          method="post"
+        >
+          <input type="hidden" th:field="*{postId}" />
+          <input type="hidden" th:field="*{categoryId}" />
+
+          <div class="mb-3">
+            <textarea
+              th:field="*{contents}"
+              class="form-control"
+              rows="3"
+              placeholder="따뜻한 댓글을 남겨주세요."
+              required
+            ></textarea>
+            <div
+              class="text-danger small mt-1"
+              th:if="${#fields.hasErrors('contents')}"
+              th:errors="*{contents}"
+            ></div>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary px-4">등록</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 로그인하지 않은 경우 -->
+      <div th:if="${session.loginUser == null}" class="text-center py-3">
+        <p class="mb-0 text-muted">
+          댓글을 작성하려면
+          <a th:href="@{/user/login}" class="fw-bold text-decoration-none">로그인</a>이 필요합니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- 스크립트를 fragment(content) 내부에 배치하여 layout 적용 시 유실되지 않도록 함 -->
+    <script th:inline="javascript">
+      function showEditForm(commentId) {
+          const contentLabel = document.getElementById('content-' + commentId);
+          const editForm = document.getElementById('edit-form-' + commentId);
+          if (contentLabel) contentLabel.style.display = 'none';
+          if (editForm) editForm.style.display = 'block';
+      }
+
+      function hideEditForm(commentId) {
+          const contentLabel = document.getElementById('content-' + commentId);
+          const editForm = document.getElementById('edit-form-' + commentId);
+          if (contentLabel) contentLabel.style.display = 'block';
+          if (editForm) editForm.style.display = 'none';
+      }
+    </script>
+  </div> <!-- fragment:content 끝 -->
 </html>

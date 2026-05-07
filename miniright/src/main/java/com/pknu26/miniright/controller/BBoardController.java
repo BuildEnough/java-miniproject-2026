@@ -26,6 +26,7 @@ import com.pknu26.miniright.dto.LoginUser;
 import com.pknu26.miniright.dto.PageRequest;
 import com.pknu26.miniright.dto.PageResponse;
 import com.pknu26.miniright.service.BBoardService;
+import com.pknu26.miniright.service.CommentsService;
 import com.pknu26.miniright.validation.BBoardForm;
 
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class BBoardController {
 
     private final BBoardService bBoardService;
+    private final CommentsService commentsService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -138,10 +140,21 @@ public class BBoardController {
             isOwner = loginUser.getUserId().equals(bBoard.getUserId());
         }
 
+        List<com.pknu26.miniright.dto.Comments> commentsList = commentsService.getCommentsList(postId);
+        
+        // 3. 댓글 입력 폼 객체 생성 (validation을 위해 필요)
+        com.pknu26.miniright.validation.CommentsForm commentsForm = new com.pknu26.miniright.validation.CommentsForm();
+        // 폼 에러가 나서 돌아온 경우를 위해 postId와 categoryId는 미리 세팅
+        commentsForm.setPostId(postId);
+        commentsForm.setCategoryId(bBoard.getCategoryId());
+
         model.addAttribute("bboard", bBoard);
         model.addAttribute("isOwner", isOwner);
 
-        return "bboard/detail";
+        model.addAttribute("comments", commentsList);
+        model.addAttribute("commentsForm", commentsForm);
+
+        return "/bboard/detail";
     }
 
     // 수정 화면: 조회수 증가 X

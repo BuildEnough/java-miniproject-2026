@@ -9,11 +9,11 @@
             C.COMMENT_ID,
             C.CONTENTS,
             C.CREATED_AT,
-            C.UPDATED_AT,
+            C.UPDATED_at,
             C.POST_ID,
             C.CATEGORY_ID,
             C.USER_ID,
-            U.NICKNAME
+            U.LOGIN_ID AS loginId
         FROM COMMENTS C
         LEFT OUTER JOIN USERS U ON C.USER_ID = U.USER_ID
         WHERE C.POST_ID = #{postId}

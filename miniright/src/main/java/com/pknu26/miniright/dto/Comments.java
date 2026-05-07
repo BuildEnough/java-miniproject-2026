@@ -16,7 +16,5 @@ public class Comments {
     private Long postId;
     private Long categoryId;
     private Long userId;
-    
-    // 작성자 이름을 화면에 표시하기 위한 필드 (USERS 테이블 JOIN용)
-    private String nickname;
+    private String loginId;
 }
