@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.pknu26.miniright.dto.BBoard;
 import com.pknu26.miniright.dto.LoginUser;
@@ -101,13 +103,24 @@ public class BBoardController {
         return "redirect:/bboard/list";
     }
 
-    // 상세 조회: 여기서만 조회수 증가
+    // 상세 조회
+    // 일반 상세보기: 조회수 증가 O
+    // 수정 후 상세보기 이동: skipViewCount=true면 조회수 증가 X
     @GetMapping("/detail/{postId}")
     public String detail(@PathVariable("postId") Long postId,
+                         @RequestParam(value = "skipViewCount", defaultValue = "false") boolean skipViewCount,
                          Model model,
                          HttpSession session) {
 
-        BBoard bBoard = this.bBoardService.readBBoardById(postId);
+        BBoard bBoard;
+
+        if (skipViewCount) {
+            // 수정 후 상세 페이지로 돌아온 경우에는 조회수 증가 X
+            bBoard = this.bBoardService.readBBoardForEdit(postId);
+        } else {
+            // 일반 상세보기는 조회수 증가 O
+            bBoard = this.bBoardService.readBBoardById(postId);
+        }
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
@@ -139,12 +152,14 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
+        // 수정 화면에서는 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
+        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -166,7 +181,8 @@ public class BBoardController {
     public String edit(@PathVariable("postId") Long postId,
                        @Valid @ModelAttribute("bBoardForm") BBoardForm bBoardForm,
                        BindingResult bindingResult,
-                       HttpSession session) {
+                       HttpSession session,
+                       RedirectAttributes redirectAttributes) {
 
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
@@ -174,12 +190,14 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
+        // 수정 처리에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard originBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (originBoard == null) {
             return "redirect:/bboard/list";
         }
 
+        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(originBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -191,9 +209,12 @@ public class BBoardController {
         try {
             String newImagePath = saveImage(bBoardForm.getImageFile());
 
+            // 새 이미지가 있으면 새 이미지로 교체
             if (newImagePath != null) {
                 bBoardForm.setImagePath(newImagePath);
             }
+
+            // 새 이미지가 없으면 hidden input으로 넘어온 기존 imagePath 유지
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("imageFile", "imageFile", e.getMessage());
             return "/bboard/form";
@@ -203,10 +224,14 @@ public class BBoardController {
 
         this.bBoardService.updateBBoard(bBoardForm);
 
+        // 수정 후 상세 페이지로 이동할 때 조회수 증가 막기
+        // /bboard/detail/번호?skipViewCount=true 형태로 이동
+        redirectAttributes.addAttribute("skipViewCount", true);
+
         return "redirect:/bboard/detail/" + postId;
     }
 
-    // 삭제: 조회수 증가 X
+    // 삭제 처리: 조회수 증가 X
     @PostMapping("/delete/{postId}")
     public String delete(@PathVariable("postId") Long postId,
                          HttpSession session) {
@@ -217,12 +242,14 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
+        // 삭제 권한 확인에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
+        // 작성자 본인만 삭제 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -256,7 +283,9 @@ public class BBoardController {
         String savedFilename = UUID.randomUUID() + extension;
 
         try {
-            Path uploadDir = Paths.get("uploads", "bboard").toAbsolutePath().normalize();
+            Path uploadDir = Paths.get("uploads", "bboard")
+                    .toAbsolutePath()
+                    .normalize();
 
             Files.createDirectories(uploadDir);
 
