@@ -3,7 +3,7 @@
   lang="ko"
   xmlns:th="http://www.thymeleaf.org"
   th:fragment="layout(content, pageScripts)"
-  data-bs-theme="auto"
+  data-bs-theme="light"
 >
   <head>
     <meta charset="UTF-8" />
@@ -32,16 +32,17 @@
       type="text/css"
       th:href="@{/trumbowyg/ui/trumbowyg.min.css}"
     />
-
-    <script th:src="@{/js/color-modes.js}"></script>
   </head>
 
   <body class="d-flex flex-column min-vh-100">
 
     <!-- 네비게이션 -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">Community & Trade</a>
+    <nav class="navbar navbar-expand-lg app-navbar">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" th:href="@{/}">
+          <i class="bi bi-shop-window me-1"></i>
+          Community & Trade
+        </a>
 
         <button
           class="navbar-toggler"
@@ -56,41 +57,89 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarMenu">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
             <li class="nav-item">
-              <a class="nav-link" th:href="@{/}">홈</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" th:href="@{/cboard/list}">자유게시판</a>
+              <a class="nav-link" th:href="@{/}">
+                홈
+              </a>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" th:href="@{/bboard/list}">거래게시판</a>
+              <a class="nav-link" th:href="@{/cboard/list}">
+                자유게시판
+              </a>
             </li>
 
-            <li class="nav-item" th:if="${session.loginUser == null}">
-              <a class="nav-link" th:href="@{/user/login}">로그인</a>
-            </li>
-
-            <li class="nav-item" th:if="${session.loginUser == null}">
-              <a class="nav-link" th:href="@{/user/join}">회원가입</a>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/bboard/list}">
+                거래게시판
+              </a>
             </li>
           </ul>
 
-          <div
-            th:if="${session.loginUser != null}"
-            class="d-flex align-items-center gap-2"
-          >
-            <span class="text-light">
-              <span th:text="${session.loginUser.name}">사용자</span>님 반갑습니다.
-            </span>
+          <div class="d-flex align-items-center gap-2">
 
-            <form th:action="@{/user/logout}" method="post" class="m-0">
-              <button type="submit" class="btn btn-sm btn-outline-light">
-                로그아웃
+            <!-- 다크모드 토글 -->
+            <div class="dropdown">
+              <button
+                class="btn btn-sm btn-outline-secondary dropdown-toggle theme-toggle-btn"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-circle-half me-1"></i>
+                테마
               </button>
-            </form>
+
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                  <button class="dropdown-item theme-option" type="button" data-theme-value="light">
+                    <i class="bi bi-sun me-2"></i>
+                    라이트
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item theme-option" type="button" data-theme-value="dark">
+                    <i class="bi bi-moon-stars me-2"></i>
+                    다크
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item theme-option" type="button" data-theme-value="auto">
+                    <i class="bi bi-circle-half me-2"></i>
+                    시스템
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 비로그인 -->
+            <div th:if="${session.loginUser == null}" class="d-flex gap-2">
+              <a class="btn btn-sm btn-outline-secondary" th:href="@{/user/login}">
+                로그인
+              </a>
+
+              <a class="btn btn-sm btn-primary" th:href="@{/user/join}">
+                회원가입
+              </a>
+            </div>
+
+            <!-- 로그인 -->
+            <div
+              th:if="${session.loginUser != null}"
+              class="d-flex align-items-center gap-2"
+            >
+              <span class="login-user-text">
+                <span th:text="${session.loginUser.name}">사용자</span>님
+              </span>
+
+              <form th:action="@{/user/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                  로그아웃
+                </button>
+              </form>
+            </div>
+
           </div>
         </div>
       </div>
@@ -100,10 +149,36 @@
     <main th:replace="${content}" class="flex-fill"></main>
 
     <!-- 푸터 -->
-    <footer class="container mt-auto py-3 border-top">
-      <p class="mb-0 text-muted">
-        &copy; 2026 Community & Trade
-      </p>
+    <footer class="app-footer mt-auto">
+      <div class="container d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 py-3">
+        <div class="footer-title">
+          Java Mini Project 2026
+        </div>
+
+        <div class="footer-links">
+          <a href="https://github.com/BuildEnough/java-miniproject-2026"
+             target="_blank"
+             rel="noopener">
+            GitHub Repository
+          </a>
+
+          <span class="footer-divider">·</span>
+
+          <a href="https://github.com/BuildEnough/java-miniproject-2026/issues"
+             target="_blank"
+             rel="noopener">
+            Issues
+          </a>
+
+          <span class="footer-divider">·</span>
+
+          <a href="https://github.com/BuildEnough/java-miniproject-2026/wiki"
+             target="_blank"
+             rel="noopener">
+            Wiki
+          </a>
+        </div>
+      </div>
     </footer>
 
     <!-- Bootstrap JS -->
@@ -119,6 +194,64 @@
     <!-- Trumbowyg -->
     <script th:src="@{/trumbowyg/trumbowyg.min.js}"></script>
     <script th:src="@{/trumbowyg/langs/ko.min.js}"></script>
+
+    <!-- 다크모드 스크립트 -->
+    <script>
+      (function () {
+        const STORAGE_KEY = "community-trade-theme";
+
+        const getStoredTheme = () => localStorage.getItem(STORAGE_KEY);
+
+        const setStoredTheme = (theme) => {
+          localStorage.setItem(STORAGE_KEY, theme);
+        };
+
+        const getPreferredTheme = () => {
+          const storedTheme = getStoredTheme();
+
+          if (storedTheme) {
+            return storedTheme;
+          }
+
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        };
+
+        const applyTheme = (theme) => {
+          const targetTheme =
+            theme === "auto"
+              ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+              : theme;
+
+          document.documentElement.setAttribute("data-bs-theme", targetTheme);
+
+          document.querySelectorAll(".theme-option").forEach((button) => {
+            button.classList.toggle("active", button.dataset.themeValue === theme);
+          });
+        };
+
+        const currentTheme = getStoredTheme() || "light";
+        applyTheme(currentTheme);
+
+        document.querySelectorAll(".theme-option").forEach((button) => {
+          button.addEventListener("click", () => {
+            const theme = button.dataset.themeValue;
+            setStoredTheme(theme);
+            applyTheme(theme);
+          });
+        });
+
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", () => {
+            const storedTheme = getStoredTheme();
+            if (storedTheme === "auto") {
+              applyTheme("auto");
+            }
+          });
+      })();
+    </script>
 
     <!-- 페이지 개별 스크립트 -->
     <script th:replace="${pageScripts} ?: ~{}"></script>
