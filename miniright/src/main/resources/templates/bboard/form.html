@@ -6,12 +6,12 @@
 >
   <div th:fragment="content" class="container my-3">
     <h3 class="fw-bold mb-4"
-        th:text="${bboardForm != null and bboardForm.postId != null} ? '게시글 수정' : '게시글 등록'">
+        th:text="${bBoardForm != null and bBoardForm.postId != null} ? '게시글 수정' : '게시글 등록'">
     </h3>
 
     <form
-      th:object="${bboardForm}"
-      th:action="${bboardForm != null and bboardForm.postId != null} ? @{|/bboard/edit/${bboardForm.postId}|} : @{/bboard/create}"
+      th:object="${bBoardForm}"
+      th:action="${bBoardForm != null and bBoardForm.postId != null} ? @{|/bboard/edit/${bBoardForm.postId}|} : @{/bboard/create}"
       method="post"
       enctype="multipart/form-data"
     >

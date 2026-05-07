@@ -43,11 +43,12 @@
       <div class="col">
         <div class="text-end">
           <span>
-            <a th:if="${canEdit}"
-               th:href="@{|/bboard/edit/${bboard.postId}|}"
-               class="btn btn-sm btn-warning">
-              <i class="bi bi-pencil-fill"></i> 수정
-            </a>
+            <span>
+            <a
+              th:if="${canEdit}"
+              th:href="@{|/board/edit/${board.boardId}|}"
+              class="btn btn-sm btn-warning"
+            >
 
             <form th:if="${canDelete}"
                   id="deleteForm"
@@ -55,7 +56,12 @@
                   method="post"
                   style="display: inline"
                   onsubmit="return confirm('정말 삭제하시겠습니까?');">
-              <button type="submit" class="btn btn-sm btn-danger">
+              <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal"
+              >
                 <i class="bi bi-trash-fill"></i> 삭제
               </button>
             </form>

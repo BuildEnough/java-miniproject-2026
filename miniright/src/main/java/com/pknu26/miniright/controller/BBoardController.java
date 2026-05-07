@@ -39,15 +39,15 @@ public class BBoardController {
         PageResponse<BBoard> pageResponse = new PageResponse<>(bBoardList, totalCount, currentPage, size);
         
         // 속성 이름 주의 (list.html에서 어떻게 받는지 확인)
-        model.addAttribute("bBoardList", pageResponse); 
+        model.addAttribute("bboardList", pageResponse); 
 
         return "/bboard/list";
     }
 
-    // Create와 Register 통합
+    // Create
     @GetMapping("/create")
     public String registerForm(Model model) {
-        model.addAttribute("bboardForm", new BBoardForm());
+        model.addAttribute("bBoardForm", new BBoardForm());
         return "/bboard/form"; 
     }
 
@@ -69,6 +69,13 @@ public class BBoardController {
 
     @GetMapping("/detail/{postId}")
     public String detail(@PathVariable("postId") Long postId, Model model) {
+
+        // BBoard bboard = this.bBoardService.readBBoardById(postId);
+
+        // boolean canEdit = false;
+        // boolean canDelete = false;
+
+
         model.addAttribute("bboard", this.bBoardService.readBBoardById(postId));
         return "/bboard/detail"; 
     }
