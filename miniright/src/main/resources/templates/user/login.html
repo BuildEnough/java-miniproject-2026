@@ -4,14 +4,15 @@
   xmlns:th="http://www.thymeleaf.org"
   th:replace="~{layout :: layout(~{::content}, ~{})}"
 >
-  <div th:fragment="content" class="container my-3" style="max-width: 600px">
+  <div th:fragment="content" class="container my-5" style="max-width: 600px">
     <h3 class="mb-4">로그인</h3>
 
-    <div th:if="${param.error}" class="alert alert-danger">
-      아이디 또는 비밀번호가 올바르지 않습니다.
-    </div>
-
     <form th:action="@{/user/login}" th:object="${userLoginForm}" method="post">
+
+      <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+        <p th:each="err : ${#fields.globalErrors()}" th:text="${err}" class="mb-0"></p>
+      </div>
+
       <div class="mb-3">
         <label for="loginId" class="form-label">아이디</label>
         <input
@@ -19,6 +20,7 @@
           id="loginId"
           th:field="*{loginId}"
           class="form-control"
+          placeholder="아이디를 입력하세요"
         />
         <div class="text-danger mt-1" th:errors="*{loginId}"></div>
       </div>
@@ -30,14 +32,17 @@
           id="password"
           th:field="*{password}"
           class="form-control"
+          placeholder="패스워드를 입력하세요"
         />
         <div class="text-danger mt-1" th:errors="*{password}"></div>
       </div>
 
-      <button type="submit" class="btn btn-sm btn-primary">
-        <i class="bi bi-door-open-fill"></i> 로그인</button>
-      <a th:href="@{/user/join}" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-person-fill"></i> 회원가입
+      <button type="submit" class="btn btn-primary">
+        로그인
+      </button>
+
+      <a th:href="@{/user/join}" class="btn btn-outline-secondary">
+        회원가입
       </a>
     </form>
   </div>

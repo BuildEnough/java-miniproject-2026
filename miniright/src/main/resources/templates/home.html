@@ -1,65 +1,72 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(~{::content}, ~{::script})}">
-<head>
-    <title>Community & Trade</title>
-</head>
-<body>
-
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::content}, ~{})}"
+>
   <div th:fragment="content">
-    <div class="bd-placeholder-img d-flex align-items-center mb-5" 
-         th:style="'background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(' + @{${homeContent?.caro1ImagePath ?: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1500&q=80'}} + '); width:100%; height:450px; background-size:cover; background-position:center;'">
-      <div class="container text-white">
-        <div class="carousel-caption text-start position-static" style="bottom: 0; padding-bottom: 3rem;">
-          <h1 class="display-4 fw-bold">사람들과 소통하는 즐거움</h1>
-          <p class="lead">자유롭게 소통하고, 사람들과 친하게 지내보세요.</p>
+
+    <!-- 메인 배너 -->
+    <section class="bg-dark text-white py-5 mb-5">
+      <div class="container py-5">
+        <h1 class="display-5 fw-bold">Community & Trade</h1>
+        <p class="lead mb-4">
+          자유롭게 소통하고, 필요한 물건을 거래할 수 있는 커뮤니티 플랫폼입니다.
+        </p>
+
+        <div class="d-flex gap-2">
+          <a th:href="@{/bboard/list}" class="btn btn-success btn-lg">
+            거래게시판 바로가기
+          </a>
+
+          <a th:href="@{/user/join}" class="btn btn-outline-light btn-lg"
+             th:if="${session.loginUser == null}">
+            회원가입
+          </a>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="container marketing mb-5">
+    <!-- 주요 기능 -->
+    <section class="container mb-5">
       <div class="row g-4">
-        
+
         <div class="col-md-6">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body d-flex flex-column">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-primary m-0">
-                  <i class="bi bi-chat-left-text-fill me-2"></i>자유게시판
-                </h5>
-                <a th:href="@{/board/free}" class="text-decoration-none text-muted small">더보기 ></a>
-              </div>
-              
-              <ul class="list-group list-group-flush flex-grow-1 justify-content-center">
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                  <div class="text-truncate" style="max-width: 80%;">
-                    <a href="#" class="text-decoration-none text-dark">이번 주말 동네 축제 같이 가실 분 있나요?</a>
-                  </div>
-                  <small class="text-muted"></small>
-                </li>
-              </ul>
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">
+                <i class="bi bi-chat-left-text-fill me-2"></i>
+                자유게시판
+              </h5>
+              <p class="card-text text-muted">
+                사용자들이 자유롭게 글을 작성하고 소통할 수 있는 게시판입니다.
+              </p>
+              <a th:href="@{/cboard/list}" class="btn btn-outline-primary">
+                자유게시판 이동
+              </a>
             </div>
           </div>
         </div>
 
         <div class="col-md-6">
-          <div class="card shadow-sm border-0 h-100">
+          <div class="card h-100 shadow-sm">
             <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-success m-0">
-                  <i class="bi bi-bag-check-fill me-2"></i>인기 거래 상품
-                </h5>
-                <a th:href="@{/trade/list}" class="text-decoration-none text-muted small">더보기 ></a>
-              </div>
-              
+              <h5 class="card-title fw-bold">
+                <i class="bi bi-bag-check-fill me-2"></i>
+                거래게시판
+              </h5>
+              <p class="card-text text-muted">
+                삽니다, 팝니다, 예약중, 판매완료 상태로 거래글을 관리할 수 있습니다.
+              </p>
+              <a th:href="@{/bboard/list}" class="btn btn-outline-success">
+                거래게시판 이동
+              </a>
+            </div>
+          </div>
+        </div>
 
       </div>
-    </div>
+    </section>
+
   </div>
-
-  <script th:fragment="script">
-      console.log("Home Layout Loaded");
-  </script>
-
-</body>
 </html>
