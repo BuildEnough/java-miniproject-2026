@@ -57,6 +57,7 @@ public class BBoardController {
         }
 
         model.addAttribute("bBoardForm", new BBoardForm());
+
         return "/bboard/form";
     }
 
@@ -87,10 +88,26 @@ public class BBoardController {
 
     // 상세 조회
     @GetMapping("/detail/{postId}")
-    public String detail(@PathVariable("postId") Long postId, Model model) {
+    public String detail(@PathVariable("postId") Long postId,
+                         Model model,
+                         HttpSession session) {
+
         BBoard bBoard = this.bBoardService.readBBoardById(postId);
 
+        if (bBoard == null) {
+            return "redirect:/bboard/list";
+        }
+
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        boolean isOwner = false;
+
+        if (loginUser != null && bBoard.getUserId() != null) {
+            isOwner = loginUser.getUserId().equals(bBoard.getUserId());
+        }
+
         model.addAttribute("bboard", bBoard);
+        model.addAttribute("isOwner", isOwner);
 
         return "/bboard/detail";
     }
@@ -100,6 +117,7 @@ public class BBoardController {
     public String showEditForm(@PathVariable("postId") Long postId,
                                Model model,
                                HttpSession session) {
+
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         if (loginUser == null) {
@@ -107,6 +125,15 @@ public class BBoardController {
         }
 
         BBoard bBoard = this.bBoardService.readBBoardById(postId);
+
+        if (bBoard == null) {
+            return "redirect:/bboard/list";
+        }
+
+        // 작성자 본인만 수정 화면 접근 가능
+        if (!loginUser.getUserId().equals(bBoard.getUserId())) {
+            return "redirect:/bboard/detail/" + postId;
+        }
 
         BBoardForm bBoardForm = new BBoardForm();
         bBoardForm.setPostId(bBoard.getPostId());
@@ -125,10 +152,22 @@ public class BBoardController {
                        @Valid @ModelAttribute("bBoardForm") BBoardForm bBoardForm,
                        BindingResult bindingResult,
                        HttpSession session) {
+
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         if (loginUser == null) {
             return "redirect:/user/login";
+        }
+
+        BBoard originBoard = this.bBoardService.readBBoardById(postId);
+
+        if (originBoard == null) {
+            return "redirect:/bboard/list";
+        }
+
+        // 작성자 본인만 수정 처리 가능
+        if (!loginUser.getUserId().equals(originBoard.getUserId())) {
+            return "redirect:/bboard/detail/" + postId;
         }
 
         if (bindingResult.hasErrors()) {
@@ -136,6 +175,7 @@ public class BBoardController {
         }
 
         bBoardForm.setPostId(postId);
+
         this.bBoardService.updateBBoard(bBoardForm);
 
         return "redirect:/bboard/detail/" + postId;
@@ -145,10 +185,22 @@ public class BBoardController {
     @PostMapping("/delete/{postId}")
     public String delete(@PathVariable("postId") Long postId,
                          HttpSession session) {
+
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
         if (loginUser == null) {
             return "redirect:/user/login";
+        }
+
+        BBoard bBoard = this.bBoardService.readBBoardById(postId);
+
+        if (bBoard == null) {
+            return "redirect:/bboard/list";
+        }
+
+        // 작성자 본인만 삭제 가능
+        if (!loginUser.getUserId().equals(bBoard.getUserId())) {
+            return "redirect:/bboard/detail/" + postId;
         }
 
         this.bBoardService.deleteBBoard(postId);
