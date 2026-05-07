@@ -1,5 +1,6 @@
 package com.pknu26.miniright.service;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,46 +16,57 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;  
+    private final PasswordEncoder passwordEncoder;
 
-    // 회원가입 메서드
+    // 회원가입
     @Override
     public void join(UserJoinForm form) {
-        if (isLoginIdDuplicated(form.getLoginId())) { // 동일아이디 회원가입 시도
+        String loginId = form.getLoginId().trim();
+
+        if (isLoginIdDuplicated(loginId)) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
-        if (!form.getPassword().equals(form.getPasswordConfirm())) {  // 패스워드, 패스워드 확인 불일치
+        if (!form.getPassword().equals(form.getPasswordConfirm())) {
             throw new IllegalArgumentException("패스워드와 패스워드 확인이 일치하지 않습니다.");
         }
 
         User user = new User();
-        user.setLoginId(form.getLoginId());
-        // 패스워드를 그대로 저장하지 않고 BCrypt 암호화
+        user.setLoginId(loginId);
         user.setPassword(passwordEncoder.encode(form.getPassword()));
-        user.setName(form.getName());
+        user.setName(form.getName().trim());
         user.setRole("ROLE_USER");
 
-        this.userMapper.insertUser(user);
+        try {
+            this.userMapper.insertUser(user);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디이거나 회원 번호가 중복되었습니다. DB 시퀀스를 확인해주세요.");
+        }
     }
 
+    // 로그인
     @Override
     public User login(UserLoginForm form) {
-        User user = this.userMapper.findByLoginId(form.getLoginId());
+        String loginId = form.getLoginId().trim();
 
-        if (user == null) return null;
+        User user = this.userMapper.findByLoginId(loginId);
 
-        // 입력한 패스워드를 암호화 해서 원본 패스워드와 비교
+        if (user == null) {
+            return null;
+        }
+
         boolean matches = passwordEncoder.matches(form.getPassword(), user.getPassword());
 
-        if (!matches) return null;
+        if (!matches) {
+            return null;
+        }
 
         return user;
     }
 
-    // 중복회원 조회
+    // 아이디 중복 확인
     @Override
     public boolean isLoginIdDuplicated(String loginId) {
-        return this.userMapper.findByLoginId(loginId) != null;  // 같은 아이디가 있으면 true/ 없으면 false
+        return this.userMapper.findByLoginId(loginId) != null;
     }
 }
