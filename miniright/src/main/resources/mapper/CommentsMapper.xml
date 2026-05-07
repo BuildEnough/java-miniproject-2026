@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pknu26.miniright.mapper.CommentsMapper">
+
+    <!-- 댓글 목록 조회 (작성자 닉네임 조인) -->
+    <select id="selectCommentsList" parameterType="long" resultType="com.pknu26.miniright.dto.Comments">
+        SELECT 
+            C.COMMENT_ID,
+            C.CONTENTS,
+            C.CREATED_AT,
+            C.UPDATED_AT,
+            C.POST_ID,
+            C.CATEGORY_ID,
+            C.USER_ID,
+            U.NICKNAME
+        FROM COMMENTS C
+        LEFT OUTER JOIN USERS U ON C.USER_ID = U.USER_ID
+        WHERE C.POST_ID = #{postId}
+        ORDER BY C.COMMENT_ID ASC
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="insertComment" parameterType="com.pknu26.miniright.dto.Comments">
+        INSERT INTO COMMENTS (
+            COMMENT_ID,
+            CONTENTS,
+            POST_ID,
+            CATEGORY_ID,
+            USER_ID
+        ) VALUES (
+            COMMENT_SEQ.NEXTVAL,
+            #{contents},
+            #{postId},
+            #{categoryId},
+            #{userId}
+        )
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="com.pknu26.miniright.dto.Comments">
+        UPDATE COMMENTS
+        SET CONTENTS = #{contents},
+            UPDATED_AT = SYSDATE
+        WHERE COMMENT_ID = #{commentId}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment" parameterType="long">
+        DELETE FROM COMMENTS
+        WHERE COMMENT_ID = #{commentId}
+    </delete>
+
+</mapper>
