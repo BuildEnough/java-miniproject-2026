@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/join")
     public String showJoinForm(Model model) {
         model.addAttribute("userJoinForm", new UserJoinForm());
-        return "/user/join";
+        return "user/join";
     }
 
     // 회원가입 처리
@@ -38,14 +38,14 @@ public class UserController {
                        BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return "/user/join";
+            return "user/join";
         }
 
         try {
             this.userService.join(form);
         } catch (IllegalArgumentException e) {
             bindingResult.reject("error", e.getMessage());
-            return "/user/join";
+            return "user/join";
         }
 
         return "redirect:/user/login";
@@ -55,7 +55,7 @@ public class UserController {
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("userLoginForm", new UserLoginForm());
-        return "/user/login";
+        return "user/login";
     }
 
     // 로그인 처리
@@ -65,14 +65,14 @@ public class UserController {
                         HttpSession session) {
 
         if (bindingResult.hasErrors()) {
-            return "/user/login";
+            return "user/login";
         }
 
         User user = this.userService.login(form);
 
         if (user == null) {
             bindingResult.reject("error", "아이디 또는 패스워드가 올바르지 않습니다.");
-            return "/user/login";
+            return "user/login";
         }
 
         LoginUser loginUser = new LoginUser(
@@ -84,6 +84,7 @@ public class UserController {
 
         session.setAttribute("loginUser", loginUser);
 
+        // 자유게시판이 아니라 거래게시판으로 이동
         return "redirect:/bboard/list";
     }
 
@@ -91,6 +92,8 @@ public class UserController {
     @PostMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
+
+        // 로그아웃 후 홈으로 이동
         return "redirect:/";
     }
 }

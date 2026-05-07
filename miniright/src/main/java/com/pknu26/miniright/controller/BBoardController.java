@@ -53,7 +53,7 @@ public class BBoardController {
         model.addAttribute("bBoardList", pageResponse);
         model.addAttribute("pageRequest", pageRequest);
 
-        return "/bboard/list";
+        return "bboard/list";
     }
 
     // 등록 화면
@@ -67,7 +67,7 @@ public class BBoardController {
 
         model.addAttribute("bBoardForm", new BBoardForm());
 
-        return "/bboard/form";
+        return "bboard/form";
     }
 
     // 등록 처리
@@ -85,7 +85,7 @@ public class BBoardController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("bBoardForm", bBoardForm);
-            return "/bboard/form";
+            return "bboard/form";
         }
 
         try {
@@ -93,7 +93,7 @@ public class BBoardController {
             bBoardForm.setImagePath(imagePath);
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("imageFile", "imageFile", e.getMessage());
-            return "/bboard/form";
+            return "bboard/form";
         }
 
         bBoardForm.setUserId(loginUser.getUserId());
@@ -115,10 +115,8 @@ public class BBoardController {
         BBoard bBoard;
 
         if (skipViewCount) {
-            // 수정 후 상세 페이지로 돌아온 경우에는 조회수 증가 X
             bBoard = this.bBoardService.readBBoardForEdit(postId);
         } else {
-            // 일반 상세보기는 조회수 증가 O
             bBoard = this.bBoardService.readBBoardById(postId);
         }
 
@@ -137,7 +135,7 @@ public class BBoardController {
         model.addAttribute("bboard", bBoard);
         model.addAttribute("isOwner", isOwner);
 
-        return "/bboard/detail";
+        return "bboard/detail";
     }
 
     // 수정 화면: 조회수 증가 X
@@ -152,14 +150,12 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
-        // 수정 화면에서는 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
-        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -173,7 +169,7 @@ public class BBoardController {
 
         model.addAttribute("bBoardForm", bBoardForm);
 
-        return "/bboard/form";
+        return "bboard/form";
     }
 
     // 수정 처리: 조회수 증가 X
@@ -190,34 +186,29 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
-        // 수정 처리에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard originBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (originBoard == null) {
             return "redirect:/bboard/list";
         }
 
-        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(originBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
 
         if (bindingResult.hasErrors()) {
-            return "/bboard/form";
+            return "bboard/form";
         }
 
         try {
             String newImagePath = saveImage(bBoardForm.getImageFile());
 
-            // 새 이미지가 있으면 새 이미지로 교체
             if (newImagePath != null) {
                 bBoardForm.setImagePath(newImagePath);
             }
-
-            // 새 이미지가 없으면 hidden input으로 넘어온 기존 imagePath 유지
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("imageFile", "imageFile", e.getMessage());
-            return "/bboard/form";
+            return "bboard/form";
         }
 
         bBoardForm.setPostId(postId);
@@ -225,7 +216,6 @@ public class BBoardController {
         this.bBoardService.updateBBoard(bBoardForm);
 
         // 수정 후 상세 페이지로 이동할 때 조회수 증가 막기
-        // /bboard/detail/번호?skipViewCount=true 형태로 이동
         redirectAttributes.addAttribute("skipViewCount", true);
 
         return "redirect:/bboard/detail/" + postId;
@@ -242,14 +232,12 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
-        // 삭제 권한 확인에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
-        // 작성자 본인만 삭제 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
