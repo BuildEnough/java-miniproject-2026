@@ -1,104 +1,259 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>자유게시판 상세</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            width: 800px;
-            margin: 40px auto;
-        }
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::content}, ~{::pageScripts})}"
+>
+  <div th:fragment="content" class="container my-5" style="max-width: 960px">
+    <div th:if="${cBoard != null}">
+      <!-- 제목 영역 -->
+      <section class="detail-title-box mb-4">
+        <div class="mb-3">
+          <span class="category-badge badge-buy">
+            <i class="bi bi-chat-square-text me-1"></i>
+            자유게시판
+          </span>
+        </div>
 
-        h1 {
-            margin-bottom: 20px;
-        }
+        <h2 class="detail-title mb-3" th:text="${cBoard.title}">게시글 제목</h2>
 
-        .post-box {
-            border-top: 2px solid #333;
-            border-bottom: 1px solid #ddd;
-            padding: 20px 0;
-        }
+        <div class="detail-meta d-flex flex-wrap gap-3">
+          <span>
+            <i class="bi bi-hash"></i>
+            번호 <span th:text="${cBoard.postId}">1</span>
+          </span>
 
-        .title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
+          <span>
+            <i class="bi bi-person"></i>
+            작성자 <span th:text="${cBoard.writer}">작성자</span>
+          </span>
 
-        .meta {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
+          <span>
+            <i class="bi bi-eye"></i>
+            조회수 <span th:text="${cBoard.viewCount}">0</span>
+          </span>
 
-        .content {
-            min-height: 250px;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
+          <span>
+            <i class="bi bi-calendar3"></i>
+            작성일
+            <span
+              th:text="${cBoard.createdAt != null ? #temporals.format(cBoard.createdAt, 'yyyy-MM-dd HH:mm') : '-'}"
+            >
+              -
+            </span>
+          </span>
 
-        .btn-area {
-            margin-top: 20px;
-            display: flex;
-            gap: 8px;
-        }
+          <span th:if="${cBoard.updatedAt != null}">
+            <i class="bi bi-pencil-square"></i>
+            수정일
+            <span
+              th:text="${#temporals.format(cBoard.updatedAt, 'yyyy-MM-dd HH:mm')}"
+            >
+              -
+            </span>
+          </span>
+        </div>
+      </section>
 
-        a, button {
-            padding: 9px 16px;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background-color: #fff;
-            color: #333;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
+      <!-- 내용 영역 -->
+      <section class="detail-content mb-4">
+        <div th:utext="${cBoard.contents}">내용</div>
+      </section>
 
-        a:hover, button:hover {
-            background-color: #f2f2f2;
-        }
+      <!-- 버튼 영역 -->
+      <div class="d-flex justify-content-between align-items-center mb-5">
+        <a th:href="@{/cboard/list}" class="btn btn-outline-secondary">
+          <i class="bi bi-list-ul me-1"></i>
+          목록
+        </a>
 
-        form {
-            display: inline;
-        }
-    </style>
-</head>
-<body>
+        <div class="d-flex flex-column align-items-end gap-2">
+          <!-- 작성자인 경우 -->
+          <div
+            class="d-flex gap-2"
+            th:if="${session.loginUser != null and session.loginUser.userId == cBoard.userId}"
+          >
+            <a
+              th:href="@{/cboard/edit/{id}(id=${cBoard.postId})}"
+              class="btn btn-warning"
+            >
+              <i class="bi bi-pencil-square me-1"></i>
+              수정
+            </a>
 
-<h1>자유게시판 상세</h1>
+            <form
+              th:action="@{/cboard/delete/{id}(id=${cBoard.postId})}"
+              method="post"
+              class="m-0"
+              onsubmit="return confirm('정말 삭제하시겠습니까?');"
+            >
+              <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-1"></i>
+                삭제
+              </button>
+            </form>
+          </div>
 
-<div class="post-box">
-    <div class="title" th:text="${cBoard.title}">제목</div>
+          <!-- 로그인하지 않은 사용자 -->
+          <div th:if="${session.loginUser == null}" class="text-muted small">
+            수정과 삭제는 로그인 후 이용할 수 있습니다.
+          </div>
 
-    <div class="meta">
-        작성자:
-        <span th:text="${cBoard.writer}">작성자</span>
-        |
-        조회수:
-        <span th:text="${cBoard.viewCount}">0</span>
-        |
-        작성일:
-        <span th:text="${#temporals.format(cBoard.createdAt, 'yyyy-MM-dd HH:mm')}">
-            2026-05-06
-        </span>
+          <!-- 로그인했지만 작성자가 아닌 사용자 -->
+          <div
+            th:if="${session.loginUser != null and session.loginUser.userId != cBoard.userId}"
+            class="text-muted small"
+          >
+            작성자만 수정과 삭제를 할 수 있습니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- 댓글 영역 -->
+      <section class="form-page-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="form-page-title mb-0">
+            <i class="bi bi-chat-dots me-1"></i>
+            댓글
+          </h4>
+          <span
+            class="text-muted small"
+            th:text="${replyList != null ? #lists.size(replyList) : 0} + '개'"
+          >
+            0개
+          </span>
+        </div>
+
+        <!-- 댓글 작성 -->
+        <form
+          th:action="@{/reply/create}"
+          th:object="${replyForm}"
+          method="post"
+          class="mb-4"
+        >
+          <input
+            type="hidden"
+            th:field="*{postId}"
+            th:value="${cBoard.postId}"
+          />
+
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label for="replyWriter" class="form-label">작성자</label>
+              <input
+                type="text"
+                id="replyWriter"
+                th:field="*{writer}"
+                class="form-control"
+                placeholder="작성자 이름을 입력하세요"
+              />
+
+              <div
+                class="text-danger small mt-1"
+                th:if="${#fields.hasErrors('writer')}"
+                th:errors="*{writer}"
+              ></div>
+            </div>
+
+            <div class="col-md-7">
+              <label for="replyContents" class="form-label">댓글 내용</label>
+              <textarea
+                id="replyContents"
+                th:field="*{contents}"
+                class="form-control"
+                rows="1"
+                placeholder="댓글 내용을 입력하세요."
+              ></textarea>
+              <div
+                class="text-danger small mt-1"
+                th:if="${#fields.hasErrors('contents')}"
+                th:errors="*{contents}"
+              ></div>
+            </div>
+
+            <div class="col-md-2 d-grid">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send me-1"></i>
+                등록
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- 댓글 없음 -->
+        <div
+          class="empty-state text-center py-4"
+          th:if="${replyList == null or #lists.isEmpty(replyList)}"
+        >
+          <i class="bi bi-chat-square d-block mb-3"></i>
+          <p class="mb-0">댓글이 없습니다.</p>
+        </div>
+
+        <!-- 댓글 목록 -->
+        <div th:if="${replyList != null and !#lists.isEmpty(replyList)}">
+          <div class="app-card p-3 mb-3" th:each="reply : ${replyList}">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div class="flex-grow-1">
+                <div class="detail-meta mb-2">
+                  <i class="bi bi-person-circle me-1"></i>
+                  <strong th:text="${reply.writer}">댓글 작성자</strong>
+                  <span class="mx-2">·</span>
+                  <span
+                    th:text="${reply.createdAt != null ? #temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm') : '-'}"
+                  >
+                    -
+                  </span>
+                </div>
+
+                <div
+                  style="white-space: pre-wrap; line-height: 1.7"
+                  th:text="${reply.contents}"
+                >
+                  댓글 내용
+                </div>
+              </div>
+
+              <div class="d-flex flex-column align-items-end gap-1">
+                <!-- 댓글 작성자인 경우 -->
+                <form
+                  th:if="${session.loginUser != null and session.loginUser.userId == reply.userId}"
+                  th:action="@{/reply/delete/{replyId}(replyId=${reply.replyId})}"
+                  method="post"
+                  class="m-0"
+                  onsubmit="return confirm('댓글을 삭제하시겠습니까?');"
+                >
+                  <input
+                    type="hidden"
+                    name="postId"
+                    th:value="${cBoard.postId}"
+                  />
+
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-outline-secondary"
+                  >
+                    삭제
+                  </button>
+                </form>
+
+                <!-- 로그인 안 한 사용자 -->
+                <div
+                  th:if="${session.loginUser == null}"
+                  class="text-muted small"
+                ></div>
+
+                <!-- 로그인했지만 작성자가 아닌 경우 -->
+                <div
+                  th:if="${session.loginUser != null and session.loginUser.userId != reply.userId}"
+                  class="text-muted small"
+                >
+                  작성자만 삭제가 가능합니다.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-
-    <div class="content" th:text="${cBoard.contents}">
-        내용
-    </div>
-</div>
-
-<div class="btn-area">
-    <a th:href="@{/cboard/list}">목록</a>
-
-    <a th:href="@{/cboard/edit/{id}(id=${cBoard.postId})}">수정</a>
-
-    <form th:action="@{/cboard/delete/{id}(id=${cBoard.postId})}" method="post"
-          onsubmit="return confirm('정말 삭제하시겠습니까?');">
-        <button type="submit">삭제</button>
-    </form>
-</div>
-
-</body>
+  </div>
 </html>

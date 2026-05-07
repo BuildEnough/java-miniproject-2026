@@ -6,12 +6,16 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.pknu26.miniright.dto.CBoard;
+import com.pknu26.miniright.dto.PageRequest;
 
 @Mapper
 public interface CBoardMapper {
 
-    // 전체 게시글 목록 조회
-    List<CBoard> findAll();
+    // 전체 게시글 목록 조회 + 페이징
+    List<CBoard> findAll(PageRequest pageRequest);
+
+    // 페이징용 전체 게시글 개수 
+    int countAll();
 
     // 특정 게시글 1개 조회
     CBoard findById(@Param("postId") Long postId);

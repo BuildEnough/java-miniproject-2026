@@ -1,112 +1,121 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>자유게시판 글쓰기</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            width: 800px;
-            margin: 40px auto;
-        }
+<!doctype html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::content}, ~{::pageScripts})}"
+>
+  <div th:fragment="content" class="container my-5" style="max-width: 960px">
+    <div class="form-page-card">
+      <div class="mb-4">
+        <h3
+          class="form-page-title mb-2"
+          th:text="${cBoardForm.postId == null} ? '자유게시글 등록' : '자유게시글 수정'"
+        >
+          자유게시글 등록
+        </h3>
+        <p class="text-muted mb-0">
+          제목과 내용을 입력하고, 필요하면 익명으로 게시할 수 있습니다.
+        </p>
+      </div>
 
-        h1 {
-            margin-bottom: 20px;
-        }
+      <form
+        th:object="${cBoardForm}"
+        th:action="${cBoardForm.postId == null} ? @{/cboard/create} : @{/cboard/edit/{postId}(postId=${cBoardForm.postId})}"
+        method="post"
+      >
+        <input type="hidden" th:field="*{postId}" />
+        <input type="hidden" th:field="*{writerId}" />
 
-        .form-group {
-            margin-bottom: 18px;
-        }
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label for="title" class="form-label">제목</label>
+            <input
+              type="text"
+              id="title"
+              th:field="*{title}"
+              class="form-control form-control-lg"
+              placeholder="제목을 입력하세요"
+            />
+            <div
+              class="text-danger mt-1"
+              th:if="${#fields.hasErrors('title')}"
+              th:errors="*{title}"
+            >
+              제목 오류
+            </div>
+          </div>
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        textarea {
-            height: 250px;
-            resize: vertical;
-        }
-
-        .error {
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .btn-area {
-            margin-top: 20px;
-            display: flex;
-            gap: 8px;
-        }
-
-        button, a {
-            padding: 9px 16px;
-            border: 1px solid #333;
-            border-radius: 4px;
-            background-color: #fff;
-            color: #333;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        button:hover, a:hover {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-
-<h1 th:text="${cBoardForm.postId == null} ? '자유게시판 글쓰기' : '자유게시판 글수정'">
-    자유게시판 글쓰기
-</h1>
-
-<form th:object="${cBoardForm}"
-      th:action="${cBoardForm.postId == null} ? @{/cboard/create} : @{/cboard/edit/{postId}(postId=${cBoardForm.postId})}"
-      method="post">
-
-    <input type="hidden" th:field="*{postId}">
-
-    <div class="form-group">
-        <label for="title">제목</label>
-        <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력하세요">
-        <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
-            제목 오류
+          <div class="col-md-4">
+            <label for="writer" class="form-label">작성자</label>
+            <input
+              type="text"
+              id="writer"
+              th:field="*{writer}"
+              class="form-control form-control-lg"
+              readonly
+            />
+          </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label for="writer">작성자</label>
-        <input type="text" id="writer" th:field="*{writer}" placeholder="작성자를 입력하세요">
-        <div class="error" th:if="${#fields.hasErrors('writer')}" th:errors="*{writer}">
-            작성자 오류
+        <div class="form-check mt-4" th:if="${cBoardForm.postId == null}">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="anonymous"
+            th:field="*{anonymous}"
+            value="1"
+          />
+          <label class="form-check-label fw-bold" for="anonymous"> 익명 </label>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label for="contents">내용</label>
-        <textarea id="contents" th:field="*{contents}" placeholder="내용을 입력하세요"></textarea>
-        <div class="error" th:if="${#fields.hasErrors('contents')}" th:errors="*{contents}">
+        <div class="mt-4">
+          <label for="contents" class="form-label">내용</label>
+          <textarea
+            id="contents"
+            th:field="*{contents}"
+            class="form-control"
+            rows="12"
+            placeholder="내용을 입력하세요."
+          ></textarea>
+          <div
+            class="text-danger mt-1"
+            th:if="${#fields.hasErrors('contents')}"
+            th:errors="*{contents}"
+          >
             내용 오류
+          </div>
         </div>
+
+        <div
+          class="d-flex justify-content-between align-items-center border-top pt-4 mt-4"
+        >
+          <a th:href="@{/cboard/list}" class="btn btn-outline-secondary">
+            <i class="bi bi-list-ul me-1"></i>
+            목록으로
+          </a>
+
+          <button type="submit" class="btn btn-primary px-5">
+            <i class="bi bi-check-circle me-1"></i>
+            <span th:text="${cBoardForm.postId == null} ? '등록' : '수정'"
+              >저장</span
+            >
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <div class="btn-area">
-        <button type="submit" th:text="${cBoardForm.postId == null} ? '등록' : '수정'">등록</button>
-        <a th:href="@{/cboard/list}">목록</a>
-    </div>
-
-</form>
-
-</body>
+  <script th:fragment="pageScripts">
+    $(function () {
+      $("#contents").trumbowyg({
+        lang: "ko",
+        btns: [
+          ["strong", "em"],
+          ["unorderedList", "orderedList"],
+          ["link"],
+          ["removeformat"],
+        ],
+      });
+    });
+  </script>
 </html>

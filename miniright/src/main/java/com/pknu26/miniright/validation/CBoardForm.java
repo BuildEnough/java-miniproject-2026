@@ -14,7 +14,11 @@ public class CBoardForm {
     @NotBlank(message = "내용은 필수입니다.")
     private String contents;
 
-    @NotBlank(message = "작성자를 입력하세요.")
-    private String writer;
+    // @NotBlank(message = "작성자를 입력하세요.")
+    private String writer; // 작성자 이름
+
+    private String writerId; // 작성자 아이디
+
+    private Integer anonymous; // 익명 처리
 
 }

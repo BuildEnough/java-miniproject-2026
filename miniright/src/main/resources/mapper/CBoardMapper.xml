@@ -5,34 +5,48 @@
 
 <mapper namespace="com.pknu26.miniright.mapper.CBoardMapper">
 
-    <!-- 전체 조회 -->
+    <!-- 전체 조회 + 페이징-->
     <select id="findAll" resultType="CBoard">
         SELECT
-            POST_ID,
-            TITLE,
-            CONTENTS,
-            WRITER,
-            VIEW_COUNT,
-            CREATED_AT,
-            UPDATED_AT,
-            USER_ID
-        FROM C_BOARD
-        ORDER BY POST_ID DESC
+            C.POST_ID,
+            C.TITLE,
+            C.CONTENTS,
+            CASE 
+                WHEN C.ANONYMOUS = 1 THEN '익명'
+                ELSE COALESCE(U.NAME, C.WRITER) END AS WRITER,
+            C.VIEW_COUNT,
+            C.CREATED_AT,
+            C.UPDATED_AT,
+            C.USER_ID,
+            (SELECT COUNT(*)
+               FROM REPLY R
+              WHERE R.POST_ID = C.POST_ID
+              ) AS REPLY_COUNT
+        FROM C_BOARD C LEFT JOIN USERS U 
+          ON C.WRITER = U.LOGIN_ID 
+        ORDER BY C.POST_ID DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
     <!-- 상세 조회 -->
     <select id="findById" parameterType="long" resultType="CBoard">
         SELECT
-            POST_ID,
-            TITLE,
-            CONTENTS,
-            WRITER,
-            VIEW_COUNT,
-            CREATED_AT,
-            UPDATED_AT,
-            USER_ID
-        FROM C_BOARD
-        WHERE POST_ID = #{postId}
+            C.POST_ID,
+            C.TITLE,
+            C.CONTENTS,
+            CASE
+                WHEN C.ANONYMOUS = 1 THEN '익명'
+                ELSE COALESCE(U.NAME, C.WRITER)
+            END AS WRITER,
+            C.USER_ID,
+            U.NAME,
+            C.VIEW_COUNT,
+            C.CREATED_AT,
+            C.UPDATED_AT,
+            C.USER_ID
+        FROM C_BOARD C LEFT JOIN USERS U
+          ON C.USER_ID = U.USER_ID 
+        WHERE C.POST_ID = #{postId}
     </select>
 
     <!-- 작성 -->
@@ -42,13 +56,15 @@
             TITLE,
             CONTENTS,
             WRITER,
-            USER_ID
+            USER_ID,
+            ANONYMOUS
         ) VALUES (
             C_BOARD_SEQ.NEXTVAL, -- 생성하신 시퀀스 명칭 확인 필요
             #{title},
             #{contents},
             #{writer},
-            #{userId} -- 로그인한 사용자의 고유 번호
+            #{userId}, -- 로그인한 사용자의 고유 번호
+            #{anonymous}
         )
     </insert>
 
@@ -69,10 +85,16 @@
     </delete>
 
     <!-- 조회수 증가 -->
-    <update id="increaseCViewCount" parameterType="long">
+    <update id="increaseViewCount" parameterType="long">
         UPDATE C_BOARD
         SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
         WHERE POST_ID = #{postId}
     </update>
+
+    <!-- 페이징용 전체 게시물 조회 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM C_BOARD
+    </select>
 
 </mapper>
