@@ -1,79 +1,89 @@
 <!DOCTYPE html>
-<html 
-  lang="ko" 
-  xmlns:th="http://www.thymeleaf.org" 
-  th:replace="~{layout :: layout(~{::content}, ~{::pageScripts})}"
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::content}, ~{})}"
 >
 <div th:fragment="content" class="container my-4">
-  
+
   <div th:if="${bboard != null}">
-    <h3>게시판 상세</h3>
+    <h3 class="mb-4">거래게시판 상세</h3>
 
     <table class="table table-bordered">
       <thead class="table-dark">
         <tr>
-          <th colspan="2" class="text-center" th:text="${bboard.title}">제목</th>
+          <th colspan="2" class="text-center" th:text="${bboard.title}">
+            제목
+          </th>
         </tr>
       </thead>
+
       <tbody>
         <tr>
           <th style="width: 15%;">번호</th>
-          <td th:text="${bboard.postId}"></td>
+          <td th:text="${bboard.postId}">1</td>
         </tr>
+
         <tr>
           <th>카테고리</th>
-          <td th:text="${bboard.categoryId} + ' [' + ${bboard.categoryId} + ']'"></td>
+          <td>
+            <span th:switch="${bboard.categoryId}">
+              <span th:case="1">삽니다</span>
+              <span th:case="2">팝니다</span>
+              <span th:case="3">예약중</span>
+              <span th:case="4">판매완료</span>
+              <span th:case="*">기타</span>
+            </span>
+          </td>
         </tr>
+
+        <tr>
+          <th>조회수</th>
+          <td th:text="${bboard.viewCount}">0</td>
+        </tr>
+
         <tr>
           <th>작성일</th>
-          <td th:text="${#temporals.format(bboard.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+          <td th:text="${#temporals.format(bboard.createdAt, 'yyyy-MM-dd HH:mm')}">
+            2026-05-07
+          </td>
         </tr>
+
         <tr>
           <th>수정일</th>
-          <td th:text="${bboard.updatedAt != null ? #temporals.format(bboard.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+          <td th:text="${bboard.updatedAt != null ? #temporals.format(bboard.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">
+            -
+          </td>
         </tr>
+
         <tr>
           <th>내용</th>
-          <td th:utext="${bboard.contents}"></td>
+          <td th:utext="${bboard.contents}">
+            내용
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <div class="row">
-      <div class="col">
-        <div class="text-end">
-          <span>
-            <span>
-            <a
-              th:if="${canEdit}"
-              th:href="@{|/board/edit/${board.boardId}|}"
-              class="btn btn-sm btn-warning"
-            >
+    <div class="text-end">
+      <a th:href="@{/bboard/list}" class="btn btn-sm btn-success">
+        목록
+      </a>
 
-            <form th:if="${canDelete}"
-                  id="deleteForm"
-                  th:action="@{|/bboard/delete/${bboard.postId}|}"
-                  method="post"
-                  style="display: inline"
-                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
-              <button
-                type="button"
-                class="btn btn-sm btn-danger"
-                data-bs-toggle="modal"
-                data-bs-target="#deleteModal"
-              >
-                <i class="bi bi-trash-fill"></i> 삭제
-              </button>
-            </form>
-          </span>
+      <a th:href="@{|/bboard/edit/${bboard.postId}|}" class="btn btn-sm btn-warning">
+        수정
+      </a>
 
-          <a th:href="@{/bboard/list}" class="btn btn-sm btn-success">
-            <i class="bi bi-list-ul"></i> 목록
-          </a>
-        </div>
-      </div>
+      <form th:action="@{|/bboard/delete/${bboard.postId}|}"
+            method="post"
+            style="display: inline"
+            onsubmit="return confirm('정말 삭제하시겠습니까?');">
+        <button type="submit" class="btn btn-sm btn-danger">
+          삭제
+        </button>
+      </form>
     </div>
-  </div> 
+  </div>
+
 </div>
-<script th:fragment="pageScripts"></script>
 </html>

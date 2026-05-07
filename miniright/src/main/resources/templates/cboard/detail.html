@@ -76,7 +76,7 @@
         <span th:text="${cBoard.writer}">작성자</span>
         |
         조회수:
-        <span th:text="${cBoard.cViewCount}">0</span>
+        <span th:text="${cBoard.viewCount}">0</span>
         |
         작성일:
         <span th:text="${#temporals.format(cBoard.createdAt, 'yyyy-MM-dd HH:mm')}">
@@ -84,7 +84,7 @@
         </span>
     </div>
 
-    <div class="content" th:text="${cBoard.cContent}">
+    <div class="content" th:text="${cBoard.contents}">
         내용
     </div>
 </div>
@@ -92,9 +92,9 @@
 <div class="btn-area">
     <a th:href="@{/cboard/list}">목록</a>
 
-    <a th:href="@{/cboard/edit/{id}(id=${cBoard.cPostId})}">수정</a>
+    <a th:href="@{/cboard/edit/{id}(id=${cBoard.postId})}">수정</a>
 
-    <form th:action="@{/cboard/delete/{id}(id=${cBoard.cPostId})}" method="post"
+    <form th:action="@{/cboard/delete/{id}(id=${cBoard.postId})}" method="post"
           onsubmit="return confirm('정말 삭제하시겠습니까?');">
         <button type="submit">삭제</button>
     </form>

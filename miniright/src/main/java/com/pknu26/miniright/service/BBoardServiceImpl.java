@@ -1,6 +1,5 @@
 package com.pknu26.miniright.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,18 +22,15 @@ public class BBoardServiceImpl implements BBoardService {
     public void createBBoard(BBoardForm bBoardForm) {
         BBoard bBoard = new BBoard();
 
-        // 누락되었던 Category ID 및 User ID 설정 추가
         bBoard.setCategoryId(bBoardForm.getCategoryId());
         bBoard.setUserId(bBoardForm.getUserId());
-        
-        bBoard.setTitle(bBoardForm.getTitle()); 
+        bBoard.setTitle(bBoardForm.getTitle());
         bBoard.setContents(bBoardForm.getContents());
-        bBoard.setCreatedAt(LocalDateTime.now());
 
         this.bBoardMapper.insertBBoard(bBoard);
     }
 
-    // 게시글 하나씩 조회
+    // 게시글 하나 조회
     @Override
     public BBoard readBBoardById(Long postId) {
         this.bBoardMapper.increaseBViewCount(postId);
@@ -47,9 +43,9 @@ public class BBoardServiceImpl implements BBoardService {
         BBoard bBoard = new BBoard();
 
         bBoard.setPostId(bBoardForm.getPostId());
+        bBoard.setCategoryId(bBoardForm.getCategoryId());
         bBoard.setTitle(bBoardForm.getTitle());
         bBoard.setContents(bBoardForm.getContents());
-        bBoard.setUpdatedAt(LocalDateTime.now());
 
         this.bBoardMapper.updateBBoard(bBoard);
     }
@@ -60,15 +56,15 @@ public class BBoardServiceImpl implements BBoardService {
         this.bBoardMapper.deleteBBoard(postId);
     }
 
-    // 페이징된 게시글 목록 조회
+    // 페이징 목록 조회
     @Override
     public List<BBoard> readBBoardList(PageRequest pageRequest) {
         return this.bBoardMapper.selectBBoardList(pageRequest);
     }
 
+    // 전체 게시글 수
     @Override
     public int getTotalCount() {
-    return this.bBoardMapper.countBBoardList();
+        return this.bBoardMapper.countBBoardList();
     }
-
 }

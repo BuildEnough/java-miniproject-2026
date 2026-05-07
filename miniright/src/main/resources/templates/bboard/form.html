@@ -6,56 +6,65 @@
 >
   <div th:fragment="content" class="container my-3">
     <h3 class="fw-bold mb-4"
-        th:text="${bBoardForm != null and bBoardForm.postId != null} ? '게시글 수정' : '게시글 등록'">
+        th:text="${bBoardForm != null and bBoardForm.postId != null} ? '거래게시글 수정' : '거래게시글 등록'">
+      거래게시글 등록
     </h3>
 
     <form
       th:object="${bBoardForm}"
       th:action="${bBoardForm != null and bBoardForm.postId != null} ? @{|/bboard/edit/${bBoardForm.postId}|} : @{/bboard/create}"
       method="post"
-      enctype="multipart/form-data"
     >
       <input type="hidden" th:field="*{postId}" />
 
       <div class="row">
         <div class="col-md-8 mb-3">
           <label for="title" class="form-label fw-bold">제목</label>
-          <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="제목을 입력하세요" />
-          <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+          <input type="text"
+                 id="title"
+                 th:field="*{title}"
+                 class="form-control"
+                 placeholder="제목을 입력하세요" />
+          <div class="text-danger"
+               th:if="${#fields.hasErrors('title')}"
+               th:errors="*{title}">
+          </div>
         </div>
 
         <div class="col-md-4 mb-3">
           <label for="categoryId" class="form-label fw-bold">카테고리</label>
           <select id="categoryId" th:field="*{categoryId}" class="form-select">
-              <option value="1">선택하세요</option>
-              <option value="2">공지사항</option>
-              <option value="3">자유게시판</option>
-              <option value="4">거래게시판</option>
+              <option value="">선택하세요</option>
+              <option value="1">삽니다</option>
+              <option value="2">팝니다</option>
+              <option value="3">예약중</option>
+              <option value="4">판매완료</option>
           </select>
-          <div class="text-danger" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
-        </div>
-      </div>
-
-      <div class="d-flex gap-4 mb-3 p-2 bg-light rounded">
-        <div class="d-flex align-items-center gap-2">
-            <label class="fw-bold small">거래 상태:</label>
-            <select class="form-select form-select-sm" style="width: auto;">
-                <option value="SELL">판매중</option>
-                <option value="RESERVE">예약중</option>
-                <option value="END">판매완료</option>
-            </select>
+          <div class="text-danger"
+               th:if="${#fields.hasErrors('categoryId')}"
+               th:errors="*{categoryId}">
+          </div>
         </div>
       </div>
 
       <div class="mb-3">
         <label for="content" class="form-label fw-bold">내용</label>
-        <textarea id="content" th:field="*{contents}" class="form-control" rows="10" placeholder="내용을 입력하세요"></textarea>
-        <div class="text-danger" th:if="${#fields.hasErrors('contents')}" th:errors="*{contents}"></div>
+        <textarea id="content"
+                  th:field="*{contents}"
+                  class="form-control"
+                  rows="10"
+                  placeholder="내용을 입력하세요"></textarea>
+        <div class="text-danger"
+             th:if="${#fields.hasErrors('contents')}"
+             th:errors="*{contents}">
+        </div>
       </div>
 
       <div class="text-end border-top pt-3">
         <a th:href="@{/bboard/list}" class="btn btn-outline-secondary">취소</a>
-        <button type="submit" class="btn btn-primary px-5 shadow-sm">등록하기</button>
+        <button type="submit" class="btn btn-primary px-5 shadow-sm">
+          저장
+        </button>
       </div>
     </form>
   </div>
