@@ -1,16 +1,21 @@
 package com.pknu26.miniright.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.pknu26.miniright.dto.Comments;
 import com.pknu26.miniright.dto.LoginUser;
 import com.pknu26.miniright.service.CommentsService;
+import com.pknu26.miniright.validation.CommentsForm;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -22,42 +27,60 @@ public class CommentsController {
 
     // 댓글 등록 처리
     @PostMapping("/create")
-    public String create(Comments comments, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String create(@Valid @ModelAttribute("commentsForm") CommentsForm commentsForm,
+                         BindingResult bindingResult,
+                         HttpSession session,
+                         RedirectAttributes redirectAttributes) {
+
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
-        // 로그인 확인
+        // 로그인 체크
         if (loginUser == null) {
             return "redirect:/user/login";
         }
 
-        // 세션에서 로그인한 사용자의 ID 설정
+        //유효성 검사 오류 처리 (내용이 비어있거나 글자수 초과 시)
+        if (bindingResult.hasErrors()) {
+            // 상세 페이지에서 에러 메시지를 보여주기 위해 bindingResult를 FlashAttribute에 담음
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.commentsForm", bindingResult);
+            redirectAttributes.addFlashAttribute("commentsForm", commentsForm);
+            redirectAttributes.addAttribute("skipViewCount", true);
+            return "redirect:/bboard/detail/" + commentsForm.getPostId();
+        }
+
+        // Form 데이터를 DTO로 변환
+        Comments comments = new Comments();
+        comments.setPostId(commentsForm.getPostId());
+        comments.setCategoryId(commentsForm.getCategoryId());
+        comments.setContents(commentsForm.getContents());
         comments.setUserId(loginUser.getUserId());
 
-        // 댓글 저장
+        // 서비스 호출 (저장)
         this.commentsService.registerComment(comments);
 
-        // 상세 페이지로 다시 이동 (조회수 증가 방지 파라미터 포함)
+        // 완료 후 상세 페이지로 리다이렉트 (조회수 증가 방지)
         redirectAttributes.addAttribute("skipViewCount", true);
         return "redirect:/bboard/detail/" + comments.getPostId();
     }
 
     // 댓글 삭제 처리
     @PostMapping("/delete/{commentId}")
-    public String delete(@PathVariable("commentId") Long commentId, 
-                         Long postId, // 상세 페이지로 돌아가기 위해 postId 필요
+    public String delete(@PathVariable("commentId") Long commentId,
+                         @RequestParam("postId") Long postId,
                          HttpSession session,
                          RedirectAttributes redirectAttributes) {
-        
+
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
 
+        // 로그인 체크
         if (loginUser == null) {
             return "redirect:/user/login";
         }
 
-        // 실제 운영 시에는 여기서 작성자 본인인지 확인하는 로직이 서비스나 컨트롤러에 추가되어야 합니다.
+        // 삭제
         this.commentsService.removeComment(commentId);
 
-        // 상세 페이지로 다시 이동
+        // 상세 페이지로 리다이렉트
         redirectAttributes.addAttribute("skipViewCount", true);
         return "redirect:/bboard/detail/" + postId;
     }
