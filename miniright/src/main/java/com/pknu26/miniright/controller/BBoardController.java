@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -37,6 +38,9 @@ import lombok.RequiredArgsConstructor;
 public class BBoardController {
 
     private final BBoardService bBoardService;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     // 게시글 목록 조회 + 검색 + 페이징
     @GetMapping("/list")
@@ -115,8 +119,10 @@ public class BBoardController {
         BBoard bBoard;
 
         if (skipViewCount) {
+            // 수정 후 상세 페이지로 돌아온 경우 조회수 증가 X
             bBoard = this.bBoardService.readBBoardForEdit(postId);
         } else {
+            // 일반 상세보기는 조회수 증가 O
             bBoard = this.bBoardService.readBBoardById(postId);
         }
 
@@ -150,12 +156,14 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
+        // 수정 화면에서는 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
+        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -186,12 +194,14 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
+        // 수정 처리에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard originBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (originBoard == null) {
             return "redirect:/bboard/list";
         }
 
+        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(originBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -203,9 +213,12 @@ public class BBoardController {
         try {
             String newImagePath = saveImage(bBoardForm.getImageFile());
 
+            // 새 이미지가 있으면 새 이미지로 교체
             if (newImagePath != null) {
                 bBoardForm.setImagePath(newImagePath);
             }
+
+            // 새 이미지가 없으면 hidden input으로 넘어온 기존 imagePath 유지
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("imageFile", "imageFile", e.getMessage());
             return "bboard/form";
@@ -216,6 +229,7 @@ public class BBoardController {
         this.bBoardService.updateBBoard(bBoardForm);
 
         // 수정 후 상세 페이지로 이동할 때 조회수 증가 막기
+        // /bboard/detail/번호?skipViewCount=true 형태로 이동
         redirectAttributes.addAttribute("skipViewCount", true);
 
         return "redirect:/bboard/detail/" + postId;
@@ -232,12 +246,14 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
+        // 삭제 권한 확인에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
+        // 작성자 본인만 삭제 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -271,13 +287,15 @@ public class BBoardController {
         String savedFilename = UUID.randomUUID() + extension;
 
         try {
-            Path uploadDir = Paths.get("uploads", "bboard")
+            Path uploadPath = Paths.get(uploadDir, "bboard")
                     .toAbsolutePath()
                     .normalize();
 
-            Files.createDirectories(uploadDir);
+            Files.createDirectories(uploadPath);
 
-            Path targetPath = uploadDir.resolve(savedFilename);
+            Path targetPath = uploadPath.resolve(savedFilename);
+
+            System.out.println("이미지 저장 위치: " + targetPath);
 
             imageFile.transferTo(targetPath.toFile());
 
