@@ -20,6 +20,9 @@ public class BBoard {
     private Integer viewCount; // 조회수
     
     private String imagePath;
+
+    // 거래게시글 댓글 개수
+    private Integer commentCount;
     
     private LocalDateTime createdAt;  // 생성일
     private LocalDateTime updatedAt;  // 수정일

@@ -148,11 +148,26 @@
                     </td>
 
                     <td>
-                        <a th:href="@{|/bboard/detail/${board.postId}|}"
-                           th:text="${board.title}"
-                           class="trade-title-link">
-                            제목
-                        </a>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <a th:href="@{|/bboard/detail/${board.postId}|}"
+                            th:text="${board.title}"
+                            class="trade-title-link">
+                                제목
+                            </a>
+
+                            <span th:if="${board.commentCount != null and board.commentCount > 0}"
+                                class="d-inline-flex align-items-center px-3 py-1 rounded-pill"
+                                style="font-size: 0.8rem;
+                                        font-weight: 700;
+                                        background-color: #f6dfc8;
+                                        color: #9a5b24;
+                                        border: 1px solid #efcfad;">
+                                댓글&nbsp;
+                                <span th:text="${board.commentCount}">
+                                    0
+                                </span>
+                            </span>
+                        </div>
                     </td>
 
                     <td class="text-center" th:text="${board.viewCount}">0</td>

@@ -36,18 +36,23 @@
             SELECT ROWNUM AS RN, T.*
             FROM (
                 SELECT
-                    POST_ID,
-                    CATEGORY_ID,
-                    TITLE,
-                    CONTENTS,
-                    VIEW_COUNT,
-                    IMAGE_PATH,
-                    CREATED_AT,
-                    UPDATED_AT,
-                    USER_ID
-                FROM B_BOARD
+                    B.POST_ID,
+                    B.CATEGORY_ID,
+                    B.TITLE,
+                    B.CONTENTS,
+                    B.VIEW_COUNT,
+                    B.IMAGE_PATH,
+                    B.CREATED_AT,
+                    B.UPDATED_AT,
+                    B.USER_ID,
+                    (
+                        SELECT COUNT(*)
+                        FROM COMMENTS C
+                        WHERE C.POST_ID = B.POST_ID
+                    ) AS COMMENT_COUNT
+                FROM B_BOARD B
                 <include refid="searchCondition" />
-                ORDER BY POST_ID DESC
+                ORDER BY B.POST_ID DESC
             ) T
             WHERE ROWNUM &lt;= #{offset} + #{size}
         )
