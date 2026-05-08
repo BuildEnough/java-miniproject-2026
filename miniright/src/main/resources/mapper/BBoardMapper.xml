@@ -92,7 +92,7 @@
             #{title},
             #{contents},
             #{userId},
-            #{imagePath}
+            #{imagePath, jdbcType=VARCHAR}
         )
     </insert>
 
@@ -102,7 +102,7 @@
         SET TITLE = #{title},
             CONTENTS = #{contents},
             CATEGORY_ID = #{categoryId},
-            IMAGE_PATH = #{imagePath},
+            IMAGE_PATH = #{imagePath, jdbcType=VARCHAR},
             UPDATED_AT = SYSDATE
         WHERE POST_ID = #{postId}
     </update>
