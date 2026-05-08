@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.pknu26.miniright.dto.CBoard;
 import com.pknu26.miniright.dto.LoginUser;
@@ -34,7 +35,8 @@ public class ReplyController {
     public String createReply(@Valid @ModelAttribute("replyForm") ReplyForm replyForm,
                               BindingResult bindingResult,
                               Model model,
-                              HttpSession session){
+                              HttpSession session, 
+                              RedirectAttributes redirectAttributes){
 
         // 로그인 세션 
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -55,13 +57,17 @@ public class ReplyController {
         
         this.replyService.createReply(replyForm);
 
+        // 답글 등록 시 조회수 증가 X
+        redirectAttributes.addFlashAttribute("skipViewCount", true);
         return "redirect:/cboard/detail/" + replyForm.getPostId();
     }
 
     //삭제
     @PostMapping("/delete/{replyId}")
     public String deleteReply(@PathVariable("replyId") Long replyId,
-                              @RequestParam Long postId, HttpSession session) {
+                              @RequestParam("postId") Long postId, 
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
         
         // 로그인 세션 추가
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
@@ -80,6 +86,9 @@ public class ReplyController {
         }
 
         this.replyService.deleteReply(replyId);
+
+        // 답글 삭제 시 조회수 증가 X
+        redirectAttributes.addFlashAttribute("skipViewCount", true);
         return "redirect:/cboard/detail/" + postId;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.pknu26.miniright.dto.CBoard;
 import com.pknu26.miniright.dto.LoginUser;
@@ -106,12 +107,20 @@ public class CBoardController {
         return "redirect:/cboard/list";
     }
 
-    // 글 상세보기
+    // 게시글 상세보기
     @GetMapping("/detail/{postId}")
     public String detail(@PathVariable("postId") Long postId, Model model, HttpSession session) {
 
-        // 게시글 조회
-        CBoard cBoard = this.cBoardService.readCBoardById(postId);
+        // 게시글 조회 후 조회수 증가 X
+        Boolean skipViewCount = (Boolean) model.asMap().get("skipViewCount");
+
+        CBoard cBoard;
+
+        if(Boolean.TRUE.equals(skipViewCount)){
+            cBoard = this.cBoardService.readCBoardForEdit(postId);
+        } else {
+            cBoard = this.cBoardService.readCBoardById(postId);
+        }
 
         model.addAttribute("cBoard", cBoard);
         model.addAttribute("replyList", this.replyService.getReplyListByPostId(postId));
@@ -162,7 +171,8 @@ public class CBoardController {
     @PostMapping("/edit/{postId}")
     public String edit(@PathVariable("postId") Long postId,
                        @Valid @ModelAttribute("cBoardForm") CBoardForm cBoardForm,
-                       BindingResult bindingResult, HttpSession session) {
+                       BindingResult bindingResult, HttpSession session,
+                       RedirectAttributes redirectAttributes) {
         
         LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
         if (loginUser == null) {
@@ -182,6 +192,10 @@ public class CBoardController {
 
         cBoardForm.setPostId(postId);
         this.cBoardService.updateCBoard(cBoardForm);
+
+        // 수정 후 상세페이지로 이동 시 게시글 조회 X
+        redirectAttributes.addFlashAttribute("skipViewCount", true);
+
         return "redirect:/cboard/detail/" + postId;
     }
 
