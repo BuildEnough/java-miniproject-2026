@@ -31,7 +31,7 @@
             #{password,jdbcType=VARCHAR},
             #{name}, 
             #{role}, 
-            SYSDATE
+            CURRENT_DATE
         )
     </insert>
 

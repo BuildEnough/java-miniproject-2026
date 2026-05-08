@@ -35,7 +35,7 @@
         ) VALUES (
             COMMENTS_SEQ.NEXTVAL,
             #{contents},
-            SYSDATE,
+            CURRENT_DATE,
             #{postId},
             (
                 SELECT CATEGORY_ID

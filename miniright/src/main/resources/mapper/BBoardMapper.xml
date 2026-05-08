@@ -103,7 +103,7 @@
             CONTENTS = #{contents},
             CATEGORY_ID = #{categoryId},
             IMAGE_PATH = #{imagePath, jdbcType=VARCHAR},
-            UPDATED_AT = SYSDATE
+            UPDATED_AT = CURRENT_DATE
         WHERE POST_ID = #{postId}
     </update>
 
