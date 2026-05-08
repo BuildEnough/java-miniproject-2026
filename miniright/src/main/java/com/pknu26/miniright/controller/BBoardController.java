@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -26,7 +25,6 @@ import com.pknu26.miniright.dto.LoginUser;
 import com.pknu26.miniright.dto.PageRequest;
 import com.pknu26.miniright.dto.PageResponse;
 import com.pknu26.miniright.service.BBoardService;
-import com.pknu26.miniright.service.CommentsService;
 import com.pknu26.miniright.validation.BBoardForm;
 
 import jakarta.servlet.http.HttpSession;
@@ -39,10 +37,6 @@ import lombok.RequiredArgsConstructor;
 public class BBoardController {
 
     private final BBoardService bBoardService;
-    private final CommentsService commentsService;
-
-    @Value("${file.upload-dir}")
-    private String uploadDir;
 
     // 게시글 목록 조회 + 검색 + 페이징
     @GetMapping("/list")
@@ -59,7 +53,7 @@ public class BBoardController {
         model.addAttribute("bBoardList", pageResponse);
         model.addAttribute("pageRequest", pageRequest);
 
-        return "bboard/list";
+        return "/bboard/list";
     }
 
     // 등록 화면
@@ -73,7 +67,7 @@ public class BBoardController {
 
         model.addAttribute("bBoardForm", new BBoardForm());
 
-        return "bboard/form";
+        return "/bboard/form";
     }
 
     // 등록 처리
@@ -91,7 +85,7 @@ public class BBoardController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("bBoardForm", bBoardForm);
-            return "bboard/form";
+            return "/bboard/form";
         }
 
         try {
@@ -99,7 +93,7 @@ public class BBoardController {
             bBoardForm.setImagePath(imagePath);
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("imageFile", "imageFile", e.getMessage());
-            return "bboard/form";
+            return "/bboard/form";
         }
 
         bBoardForm.setUserId(loginUser.getUserId());
@@ -121,7 +115,7 @@ public class BBoardController {
         BBoard bBoard;
 
         if (skipViewCount) {
-            // 수정 후 상세 페이지로 돌아온 경우 조회수 증가 X
+            // 수정 후 상세 페이지로 돌아온 경우에는 조회수 증가 X
             bBoard = this.bBoardService.readBBoardForEdit(postId);
         } else {
             // 일반 상세보기는 조회수 증가 O
@@ -140,19 +134,8 @@ public class BBoardController {
             isOwner = loginUser.getUserId().equals(bBoard.getUserId());
         }
 
-        List<com.pknu26.miniright.dto.Comments> commentsList = commentsService.getCommentsList(postId);
-        
-        // 3. 댓글 입력 폼 객체 생성 (validation을 위해 필요)
-        com.pknu26.miniright.validation.CommentsForm commentsForm = new com.pknu26.miniright.validation.CommentsForm();
-        // 폼 에러가 나서 돌아온 경우를 위해 postId와 categoryId는 미리 세팅
-        commentsForm.setPostId(postId);
-        commentsForm.setCategoryId(bBoard.getCategoryId());
-
         model.addAttribute("bboard", bBoard);
         model.addAttribute("isOwner", isOwner);
-
-        model.addAttribute("comments", commentsList);
-        model.addAttribute("commentsForm", commentsForm);
 
         return "/bboard/detail";
     }
@@ -190,7 +173,7 @@ public class BBoardController {
 
         model.addAttribute("bBoardForm", bBoardForm);
 
-        return "bboard/form";
+        return "/bboard/form";
     }
 
     // 수정 처리: 조회수 증가 X
@@ -220,7 +203,7 @@ public class BBoardController {
         }
 
         if (bindingResult.hasErrors()) {
-            return "bboard/form";
+            return "/bboard/form";
         }
 
         try {
@@ -234,7 +217,7 @@ public class BBoardController {
             // 새 이미지가 없으면 hidden input으로 넘어온 기존 imagePath 유지
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("imageFile", "imageFile", e.getMessage());
-            return "bboard/form";
+            return "/bboard/form";
         }
 
         bBoardForm.setPostId(postId);
@@ -300,15 +283,13 @@ public class BBoardController {
         String savedFilename = UUID.randomUUID() + extension;
 
         try {
-            Path uploadPath = Paths.get(uploadDir, "bboard")
+            Path uploadDir = Paths.get("uploads", "bboard")
                     .toAbsolutePath()
                     .normalize();
 
-            Files.createDirectories(uploadPath);
+            Files.createDirectories(uploadDir);
 
-            Path targetPath = uploadPath.resolve(savedFilename);
-
-            System.out.println("이미지 저장 위치: " + targetPath);
+            Path targetPath = uploadDir.resolve(savedFilename);
 
             imageFile.transferTo(targetPath.toFile());
 

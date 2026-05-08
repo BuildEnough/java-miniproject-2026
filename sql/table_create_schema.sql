@@ -94,7 +94,7 @@ CREATE TABLE REPLY (
 
 
 
---- buildenough ---
+--- buildenough start ---
 -- 시퀀스 생성
 CREATE SEQUENCE SEQ_USERS_ID
 START WITH 1
@@ -125,9 +125,3 @@ COMMIT;
 -- 이미지 업로드
 ALTER TABLE B_BOARD ADD IMAGE_PATH VARCHAR2(500);
 COMMIT;
---- ---
-
--- slw13d-ly --
--- 익명 처리 위해 C_BOARD(자유게시판) 테이블 추가 
-ALTER TABLE C_BOARD
-ADD ANONYMOUS NUMBER(1) DEFAULT 0 NOT NULL;
