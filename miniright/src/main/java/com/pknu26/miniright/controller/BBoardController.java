@@ -22,10 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.pknu26.miniright.dto.BBoard;
+import com.pknu26.miniright.dto.BBoardComment;
 import com.pknu26.miniright.dto.LoginUser;
 import com.pknu26.miniright.dto.PageRequest;
 import com.pknu26.miniright.dto.PageResponse;
+import com.pknu26.miniright.service.BBoardCommentService;
 import com.pknu26.miniright.service.BBoardService;
+import com.pknu26.miniright.validation.BBoardCommentForm;
 import com.pknu26.miniright.validation.BBoardForm;
 
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class BBoardController {
 
     private final BBoardService bBoardService;
+    private final BBoardCommentService bBoardCommentService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -119,10 +123,8 @@ public class BBoardController {
         BBoard bBoard;
 
         if (skipViewCount) {
-            // 수정 후 상세 페이지로 돌아온 경우 조회수 증가 X
             bBoard = this.bBoardService.readBBoardForEdit(postId);
         } else {
-            // 일반 상세보기는 조회수 증가 O
             bBoard = this.bBoardService.readBBoardById(postId);
         }
 
@@ -138,8 +140,12 @@ public class BBoardController {
             isOwner = loginUser.getUserId().equals(bBoard.getUserId());
         }
 
+        List<BBoardComment> commentList = this.bBoardCommentService.readCommentList(postId);
+
         model.addAttribute("bboard", bBoard);
         model.addAttribute("isOwner", isOwner);
+        model.addAttribute("commentList", commentList);
+        model.addAttribute("bBoardCommentForm", new BBoardCommentForm());
 
         return "bboard/detail";
     }
@@ -156,14 +162,12 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
-        // 수정 화면에서는 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
-        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -194,14 +198,12 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
-        // 수정 처리에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard originBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (originBoard == null) {
             return "redirect:/bboard/list";
         }
 
-        // 작성자 본인만 수정 가능
         if (!loginUser.getUserId().equals(originBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -213,12 +215,9 @@ public class BBoardController {
         try {
             String newImagePath = saveImage(bBoardForm.getImageFile());
 
-            // 새 이미지가 있으면 새 이미지로 교체
             if (newImagePath != null) {
                 bBoardForm.setImagePath(newImagePath);
             }
-
-            // 새 이미지가 없으면 hidden input으로 넘어온 기존 imagePath 유지
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("imageFile", "imageFile", e.getMessage());
             return "bboard/form";
@@ -228,8 +227,6 @@ public class BBoardController {
 
         this.bBoardService.updateBBoard(bBoardForm);
 
-        // 수정 후 상세 페이지로 이동할 때 조회수 증가 막기
-        // /bboard/detail/번호?skipViewCount=true 형태로 이동
         redirectAttributes.addAttribute("skipViewCount", true);
 
         return "redirect:/bboard/detail/" + postId;
@@ -246,14 +243,12 @@ public class BBoardController {
             return "redirect:/user/login";
         }
 
-        // 삭제 권한 확인에서도 조회수 증가하면 안 되므로 readBBoardForEdit 사용
         BBoard bBoard = this.bBoardService.readBBoardForEdit(postId);
 
         if (bBoard == null) {
             return "redirect:/bboard/list";
         }
 
-        // 작성자 본인만 삭제 가능
         if (!loginUser.getUserId().equals(bBoard.getUserId())) {
             return "redirect:/bboard/detail/" + postId;
         }
@@ -261,6 +256,51 @@ public class BBoardController {
         this.bBoardService.deleteBBoard(postId);
 
         return "redirect:/bboard/list";
+    }
+
+    // 댓글 등록
+    @PostMapping("/detail/{postId}/comments")
+    public String createComment(@PathVariable("postId") Long postId,
+                                @ModelAttribute BBoardCommentForm commentForm,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            return "redirect:/user/login";
+        }
+
+        if (commentForm.getContents() == null || commentForm.getContents().trim().isEmpty()) {
+            redirectAttributes.addAttribute("skipViewCount", true);
+            return "redirect:/bboard/detail/" + postId;
+        }
+
+        this.bBoardCommentService.createComment(postId, loginUser.getUserId(), commentForm);
+
+        redirectAttributes.addAttribute("skipViewCount", true);
+
+        return "redirect:/bboard/detail/" + postId;
+    }
+
+    // 댓글 삭제
+    @PostMapping("/detail/{postId}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable("postId") Long postId,
+                                @PathVariable("commentId") Long commentId,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            return "redirect:/user/login";
+        }
+
+        this.bBoardCommentService.deleteComment(commentId, loginUser.getUserId());
+
+        redirectAttributes.addAttribute("skipViewCount", true);
+
+        return "redirect:/bboard/detail/" + postId;
     }
 
     // 이미지 저장

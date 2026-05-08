@@ -60,3 +60,16 @@ START WITH 1
 INCREMENT BY 1
 NOCACHE
 NOCYCLE;
+
+
+
+--- buildenough start ---
+
+-- 댓글 시퀀스
+CREATE SEQUENCE COMMENTS_SEQ
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+--- buildenough end ---
